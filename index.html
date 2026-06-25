@@ -198,6 +198,25 @@ button{cursor:pointer;font-family:inherit}
 .rank-move.up{border-color:rgba(39,174,96,.55);color:var(--green-light);background:rgba(26,122,63,.16)}
 .rank-move.down{border-color:rgba(231,76,60,.55);color:var(--red);background:rgba(231,76,60,.12)}
 .rank-move.same{color:var(--dim)}
+.evo-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:.85rem .9rem;margin-bottom:.8rem;overflow:hidden}
+.evo-head{display:flex;align-items:flex-start;justify-content:space-between;gap:.7rem;margin-bottom:.65rem}
+.evo-title{font-size:.9rem;font-weight:900;color:var(--gold)}
+.evo-sub{font-size:.68rem;color:var(--dim);line-height:1.7;margin-top:.2rem}
+.evo-chart-wrap{direction:ltr;overflow-x:auto;padding:.25rem 0 .1rem;scrollbar-width:thin}
+.evo-svg{display:block;width:100%;min-width:560px;height:auto}
+.evo-axis{stroke:rgba(122,158,138,.55);stroke-width:1}
+.evo-grid{stroke:rgba(122,158,138,.16);stroke-width:1}
+.evo-label{fill:var(--dim);font-size:11px;font-weight:700}
+.evo-line{fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.evo-point{stroke:var(--bg);stroke-width:2;cursor:pointer}
+.evo-hit{fill:rgba(255,255,255,0);stroke:none;cursor:pointer;pointer-events:all}
+.evo-tip-box{background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:.48rem .6rem;margin-top:.55rem;font-size:.7rem;font-weight:800;color:var(--text);line-height:1.55;text-align:right}
+.evo-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.4rem;margin-top:.7rem}
+.evo-legend-item{display:flex;align-items:center;gap:.4rem;background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:.42rem .5rem;min-width:0}
+.evo-dot{width:.65rem;height:.65rem;border-radius:50%;flex-shrink:0}
+.evo-name{font-size:.7rem;font-weight:900;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.evo-meta{font-size:.62rem;color:var(--dim);margin-right:auto;white-space:nowrap}
+.evo-empty{text-align:center;color:var(--dim);padding:1.2rem .4rem;font-size:.78rem;line-height:1.8}
 .rank-badges{display:flex;gap:.32rem;flex-wrap:wrap;margin-top:.48rem}
 .fun-badge{display:inline-flex;align-items:center;gap:.22rem;border-radius:999px;border:1px solid rgba(240,165,0,.28);background:rgba(240,165,0,.10);color:var(--gold);font-size:.64rem;font-weight:900;padding:.18rem .5rem;line-height:1.35;font-family:inherit;cursor:pointer;position:relative;appearance:none;-webkit-appearance:none}
 .fun-badge.green{border-color:rgba(39,174,96,.35);background:rgba(26,122,63,.14);color:var(--green-light)}
@@ -4738,6 +4757,9 @@ window.addEventListener('error', function (e) {
 const PLAYERS = [];
 
 function getSavedNames() {
+  if (USE_LOCAL_PREDICTIONS_FILE_ONLY) {
+    return Object.keys(allPredictions || {}).filter(n => Object.keys(allPredictions[n] || {}).length > 0);
+  }
   const s = store.get('wc2026_fa_names');
   const stored = s ? JSON.parse(s) : [];
   const fromPreds = Object.keys(allPredictions || {});
@@ -4747,6 +4769,7 @@ function getSavedNames() {
 }
 
 function savePlayerName(name) {
+  if (USE_LOCAL_PREDICTIONS_FILE_ONLY) return;
   // اگر قبلاً حذف شده بود، از فهرست حذف‌شده‌ها بیرونش بیاور
   const removed = JSON.parse(store.get('wc2026_fa_removed') || '[]').filter(n => n !== name);
   store.set('wc2026_fa_removed', JSON.stringify(removed));
@@ -4917,7 +4940,7 @@ const MATCHES = [
 ];
 
 // ── داده از پیش بارگذاری شده (برای خروجی HTML) ──
-const BAKED_DATA = {"p":{"ایمان":{"0":[1,0],"1":[1,1],"2":[1,0],"3":[1,0],"4":[0,2],"5":[0,1],"6":[0,1],"7":[4,0],"8":[2,1],"9":[2,1],"10":[0,1],"11":[1,0],"12":[3,0],"13":[2,0],"14":[2,0],"15":[2,0],"16":[0,2],"17":[2,0],"18":[2,0],"19":[3,0],"20":[2,1],"21":[0,2],"22":[1,1],"23":[0,1],"24":[0,0],"25":[1,0],"26":[2,1],"27":[1,0],"28":[2,0],"29":[2,0],"30":[1,0],"31":[1,0],"32":[2,1],"33":[0,1],"34":[2,0],"35":[0,1],"36":[2,0],"37":[2,0],"38":[0,2],"39":[1,0],"40":[3,0],"41":[3,0],"42":[1,1],"43":[0,2],"44":[2,0],"45":[2,0],"46":[1,2],"47":[2,0],"48":[2,1],"49":[1,0],"50":[1,1],"51":[1,2],"52":[0,2],"53":[0,1],"54":[1,3],"55":[2,0],"56":[1,1],"57":[0,2],"58":[1,1],"59":[1,1],"60":[1,2],"61":[1,0],"62":[0,2],"63":[0,2],"64":[1,1],"65":[0,4],"66":[0,2],"67":[2,0],"68":[0,2],"69":[1,1],"70":[1,1],"71":[0,2]},"آرش مازندرانی":{"0":[2,0],"1":[1,1],"2":[1,2],"3":[0,2],"4":[0,1],"5":[0,1],"6":[2,1],"7":[3,0],"8":[2,2],"9":[2,1],"10":[0,1],"11":[2,0],"12":[3,0],"13":[1,2],"14":[1,0],"15":[2,0],"16":[1,2],"17":[2,0],"18":[1,0],"19":[3,0],"20":[2,1],"21":[1,2],"22":[1,0],"23":[2,0],"24":[1,0],"25":[0,1],"26":[2,1],"27":[2,1],"28":[1,0],"29":[3,0],"30":[0,2],"31":[2,0],"32":[2,0],"33":[0,2],"34":[1,0],"35":[0,2],"36":[2,0],"37":[2,1],"38":[0,2],"39":[2,0],"40":[3,0],"41":[3,0],"42":[2,1],"43":[0,1],"44":[2,1],"45":[3,1],"46":[0,2],"47":[1,0],"48":[0,1],"49":[1,0],"50":[0,2],"51":[1,2],"52":[0,1],"53":[0,2],"54":[0,3],"55":[2,0],"56":[2,0],"57":[0,2],"58":[0,2],"59":[2,2],"60":[0,2],"61":[2,0],"62":[0,2],"63":[2,3],"64":[3,1],"65":[0,1],"66":[0,3],"67":[3,1],"68":[0,3],"69":[0,2],"70":[1,0],"71":[0,3]},"میلاد":{"0":[2,0],"1":[1,1],"2":[2,1],"3":[1,0],"4":[0,1],"5":[0,2],"6":[1,3],"7":[3,0],"8":[2,2],"9":[2,1],"10":[1,0],"11":[2,0],"12":[5,1],"13":[3,1],"14":[2,0],"15":[1,0],"16":[1,3],"17":[2,1],"18":[2,0],"19":[3,1],"20":[1,1],"21":[1,2],"22":[2,1],"23":[0,1],"24":[1,0],"25":[2,0],"26":[1,1],"27":[1,0],"28":[1,0],"29":[3,0],"30":[1,0],"31":[2,1],"32":[2,0],"33":[0,1],"34":[2,0],"35":[1,2],"36":[3,1],"37":[2,2],"38":[0,1],"39":[2,0],"40":[3,0],"41":[2,1],"42":[1,1],"43":[1,2],"44":[2,1],"45":[2,1],"46":[1,3],"47":[1,0],"48":[1,0],"49":[0,1],"50":[0,2],"51":[1,1],"52":[0,1],"53":[1,3],"54":[0,2],"55":[2,1],"56":[1,0],"57":[1,2],"58":[0,1],"59":[2,2],"60":[1,2],"61":[1,0],"62":[0,2],"63":[0,1],"64":[1,2],"65":[0,2],"66":[0,2],"67":[2,0],"68":[1,1],"69":[0,2],"70":[1,1],"71":[0,3]},"علیرضا":{"0":[1,1],"1":[0,2],"2":[1,0],"3":[1,2],"4":[1,3],"5":[0,2],"6":[2,1],"7":[4,1],"8":[2,1],"9":[2,0],"10":[1,1],"11":[1,1],"12":[4,1],"13":[2,1],"14":[1,1],"15":[2,1],"16":[0,2],"17":[3,1],"18":[3,1],"19":[4,1],"20":[2,1],"21":[0,2],"22":[2,2],"23":[0,2],"24":[1,1],"25":[1,1],"26":[2,1],"27":[1,1],"28":[2,1],"29":[3,0],"30":[1,2],"31":[1,0],"32":[1,0],"33":[1,1],"34":[1,0],"35":[0,2],"36":[2,0],"37":[1,0],"38":[1,1],"39":[2,1],"40":[3,0],"41":[1,0],"42":[0,1],"43":[1,1],"44":[4,0],"45":[2,1],"46":[1,2],"47":[2,1],"48":[1,1],"49":[2,0],"50":[1,1],"51":[1,1],"52":[0,2],"53":[1,3],"54":[0,2],"55":[2,1],"56":[1,1],"57":[0,2],"58":[1,0],"59":[1,1],"60":[0,3],"61":[1,0],"62":[0,0],"63":[1,3],"64":[1,1],"65":[0,1],"66":[1,2],"67":[1,1],"68":[1,2],"69":[2,0],"70":[1,2],"71":[0,3]},"Hamid":{"0":[2,1],"1":[1,1],"2":[1,1],"3":[2,1],"4":[1,3],"5":[0,2],"6":[1,3],"7":[5,0],"8":[2,2],"9":[2,2],"10":[1,1],"11":[1,0],"12":[5,1],"13":[3,1],"14":[2,0],"15":[3,1],"16":[1,2],"17":[3,0],"18":[2,0],"19":[3,0],"20":[1,1],"21":[1,3],"22":[1,0],"23":[1,2],"24":[2,0],"25":[2,1],"26":[2,1],"27":[2,1],"28":[2,1],"29":[3,0],"30":[1,1],"31":[1,0],"32":[1,1],"33":[1,2],"34":[2,0],"35":[0,2],"36":[3,0],"37":[3,0],"38":[0,1],"39":[2,1],"40":[3,0],"41":[2,0],"42":[2,2],"43":[1,1],"44":[2,1],"45":[1,0],"46":[0,2],"47":[2,0],"48":[1,0],"49":[1,0],"50":[1,1],"51":[1,1],"52":[0,1],"53":[1,2],"54":[1,3],"55":[2,0],"56":[1,1],"57":[0,2],"58":[1,1],"59":[1,0],"60":[2,3],"61":[2,0],"62":[1,1],"63":[1,2],"64":[1,1],"65":[0,3],"66":[0,2],"67":[1,1],"68":[1,1],"69":[0,1],"70":[1,2],"71":[0,3]},"مقداد":{"0":[2,0],"1":[1,1],"2":[2,0],"3":[2,1],"4":[0,2],"5":[0,2],"6":[1,2],"7":[5,0],"8":[2,1],"9":[1,1],"10":[1,1],"11":[2,0],"12":[4,0],"13":[2,1],"14":[1,0],"15":[2,1],"16":[0,3],"17":[3,0],"18":[3,0],"19":[3,0],"20":[2,0],"21":[0,3],"22":[2,1],"23":[0,2],"24":[2,0],"25":[2,0],"26":[1,1],"27":[2,0],"28":[3,0],"29":[4,0],"30":[2,1],"31":[2,0],"32":[2,1],"33":[0,2],"34":[3,0],"35":[0,2],"36":[3,0],"37":[2,0],"38":[1,2],"39":[2,0],"40":[4,0],"41":[3,0],"42":[2,1],"43":[0,1],"44":[3,0],"45":[3,0],"46":[0,2],"47":[2,0],"48":[1,1],"49":[2,0],"50":[1,2],"51":[1,1],"52":[0,3],"53":[0,3],"54":[0,3],"55":[3,0],"56":[2,1],"57":[0,3],"58":[1,2],"59":[1,0],"60":[1,2],"61":[2,0],"62":[1,1],"63":[1,2],"64":[1,1],"65":[0,4],"66":[0,3],"67":[2,1],"68":[1,2],"69":[2,1],"70":[1,2],"71":[0,3]},"مهرداد عسگری":{"0":[2,1],"1":[1,1],"2":[2,1],"3":[1,0],"4":[1,2],"5":[1,2],"6":[1,2],"7":[3,0],"8":[2,1],"9":[4,1],"10":[1,1],"11":[1,0],"12":[5,0],"13":[1,0],"14":[2,0],"15":[4,1],"16":[1,2],"17":[4,1],"18":[1,0],"19":[4,1],"20":[3,1],"21":[0,1],"22":[1,0],"23":[0,1],"24":[1,1],"25":[2,1],"26":[2,1],"27":[1,0],"28":[1,0],"29":[4,0],"30":[1,0],"31":[2,1],"32":[2,0],"33":[1,1],"34":[1,0],"35":[0,1],"36":[1,0],"37":[1,1],"38":[1,1],"39":[3,1],"40":[4,1],"41":[2,1],"42":[1,1],"43":[1,1],"44":[3,0],"45":[2,0],"46":[0,2],"47":[1,0],"48":[1,1],"49":[1,1],"50":[0,1],"51":[1,1],"52":[0,1],"53":[0,2],"54":[2,4],"55":[1,0],"56":[0,1],"57":[0,1],"58":[1,1],"59":[1,0],"60":[1,3],"61":[1,0],"62":[1,1],"63":[0,2],"64":[0,1],"65":[0,1],"66":[0,4],"67":[1,0],"68":[0,2],"69":[0,1],"70":[0,1],"71":[0,3]}},"r":{},"kp":{"ایمان":{},"آرش مازندرانی":{},"میلاد":{},"مهرداد عسگری":{}},"kr":{}}; // __BAKED_DATA__
+const BAKED_DATA = {"p":{},"r":{},"kp":{},"kr":{}}; // __BAKED_DATA__
 
 // ── وضعیت ──
 let currentPlayer = null;
@@ -4965,7 +4988,7 @@ const ONLINE_SCORE_SOURCE = {
 };
 
 const ONLINE_PREDICTIONS_SOURCE = {
-  name: 'پیش‌بینی‌های گیت‌هاب',
+  name: 'پیش‌بینی‌های imant95',
   url: 'https://raw.githubusercontent.com/imant95/worldcup-2026-predictions/main/predictions.json'
 };
 
@@ -4973,6 +4996,9 @@ const ONLINE_TABLE_SOURCE = {
   name: 'جدول واقعی گیت‌هاب',
   url: 'https://raw.githubusercontent.com/imantoghraei/worldcup-2026-predictions/main/table.json'
 };
+
+const AUTO_SCORE_CHECK_INTERVAL_MS = 15 * 60 * 1000;
+const USE_LOCAL_PREDICTIONS_FILE_ONLY = true;
 
 // پاک‌سازی داده‌های خراب از حافظه‌ی مرورگر تا رندر خراب نشود
 function sanitizePreds(obj) {
@@ -4992,8 +5018,13 @@ function sanitizePreds(obj) {
 }
 
 function loadData() {
-  try { const p = store.get('wc2026_fa_all');  if (p) allPredictions = JSON.parse(p); } catch (e) { allPredictions = {}; }
-  try { const kp = store.get('wc2026_fa_kp');  if (kp) koPredictions = JSON.parse(kp); } catch (e) { koPredictions = {}; }
+  if (USE_LOCAL_PREDICTIONS_FILE_ONLY) {
+    allPredictions = {};
+    koPredictions = {};
+  } else {
+    try { const p = store.get('wc2026_fa_all');  if (p) allPredictions = JSON.parse(p); } catch (e) { allPredictions = {}; }
+    try { const kp = store.get('wc2026_fa_kp');  if (kp) koPredictions = JSON.parse(kp); } catch (e) { koPredictions = {}; }
+  }
   allPredictions = sanitizePreds(allPredictions);
   koPredictions  = sanitizePreds(koPredictions);
 
@@ -5007,7 +5038,7 @@ function loadData() {
 
   // اگر فایل HTML داده‌ی baked دارد، آن را با داده‌ی مرورگر «ادغام» کن
   // (به‌جای نادیده‌گرفتن یکی) تا با تعویض بازیکن هیچ داده‌ای حذف نشود.
-  if (BAKED_DATA) {
+  if (!USE_LOCAL_PREDICTIONS_FILE_ONLY && BAKED_DATA) {
     const removed = new Set(JSON.parse(store.get('wc2026_fa_removed') || '[]'));
     Object.entries(BAKED_DATA.p || {}).forEach(([name, preds]) => {
       if (removed.has(name)) return;
@@ -5491,6 +5522,17 @@ function scrollToCurrentDateIn(containerId) {
   }, 80);
 }
 
+function scrollToRankTop() {
+  setTimeout(() => {
+    const rankView = document.getElementById('rank-view');
+    if (rankView && rankView.scrollIntoView) {
+      rankView.scrollIntoView({ behavior: 'auto', block: 'start' });
+    } else if (window.scrollTo) {
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    }
+  }, 80);
+}
+
 function allMatchItems() {
   return [
     ...MATCHES.map(m => ({...m, kind:'group'})),
@@ -5528,6 +5570,231 @@ function predictionForMatchItem(playerName, m) {
   return m.kind === 'ko'
     ? ((koPredictions[playerName] || {})[m.id])
     : ((allPredictions[playerName] || {})[m.id]);
+}
+
+function emptyEvolutionStats() {
+  return { total: 0, exact: 0, gd: 0, winner: 0, zero: 0 };
+}
+
+function addEvolutionScore(stats, pts, isKo) {
+  if (pts === null || pts === undefined) return;
+  stats.total += pts;
+  if (isKo) {
+    if (pts === 8) stats.exact++;
+    else if (pts === 4) stats.gd++;
+    else stats.zero++;
+    return;
+  }
+  if (pts === 4) stats.exact++;
+  else if (pts === 2) stats.gd++;
+  else if (pts === 1) stats.winner++;
+  else stats.zero++;
+}
+
+function rankEvolutionRows(players, statsByName) {
+  return players.map(name => {
+    const stats = statsByName[name] || emptyEvolutionStats();
+    return { name, ...stats, netAcc: stats.exact - stats.zero };
+  }).sort((a, b) =>
+    b.total - a.total ||
+    b.netAcc - a.netAcc ||
+    b.exact - a.exact ||
+    b.gd - a.gd ||
+    playerDisplayName(a.name).localeCompare(playerDisplayName(b.name), 'fa')
+  );
+}
+
+function makeEvolutionSnapshot(label, key, players, statsByName) {
+  const rows = rankEvolutionRows(players, statsByName);
+  const ranks = {};
+  rows.forEach((row, i) => { ranks[row.name] = i + 1; });
+  const values = {};
+  players.forEach(name => { values[name] = (statsByName[name] || emptyEvolutionStats()).total; });
+  return { label, key, values, ranks };
+}
+
+function groupFinishDate(grp) {
+  const last = MATCHES
+    .filter(m => m.grp === grp)
+    .sort((a, b) => matchDateValue(b) - matchDateValue(a))[0];
+  return last ? last.date : null;
+}
+
+function finalGroupStageDate() {
+  const last = chronologicalMatches(MATCHES)[MATCHES.length - 1];
+  return last ? last.date : null;
+}
+
+function addEvolutionQualifierPoints(byDate, date, playerName, pts) {
+  if (!date || !pts) return;
+  if (!byDate[date]) byDate[date] = {};
+  byDate[date][playerName] = (byDate[date][playerName] || 0) + pts;
+}
+
+function qualifierPointsByFinishDate(players) {
+  const byDate = {};
+  const finalDate = finalGroupStageDate();
+  players.forEach(name => {
+    const q = calcQualifierPoints(name);
+    GROUP_LETTERS.forEach(grp => {
+      const detail = q.details && q.details[grp];
+      if (detail && detail.active) addEvolutionQualifierPoints(byDate, groupFinishDate(grp), name, detail.pts);
+    });
+    if (q.bestThirds && q.bestThirds.active) {
+      addEvolutionQualifierPoints(byDate, finalDate, name, q.bestThirds.pts);
+    }
+  });
+  return byDate;
+}
+
+function buildRankEvolutionData(players) {
+  const statsByName = {};
+  players.forEach(name => { statsByName[name] = emptyEvolutionStats(); });
+
+  const byDate = {};
+  scoredMatchItems().forEach(m => {
+    if (!byDate[m.date]) byDate[m.date] = [];
+    byDate[m.date].push(m);
+  });
+
+  const qualifierByDate = qualifierPointsByFinishDate(players);
+  const dates = [...new Set([...Object.keys(byDate), ...Object.keys(qualifierByDate)])]
+    .sort((a, b) => matchDateOnlyValue(a) - matchDateOnlyValue(b));
+
+  const snapshots = [];
+  dates.forEach(date => {
+    (byDate[date] || []).forEach(m => {
+      players.forEach(name => {
+        const pts = calcScore(predictionForMatchItem(name, m), m.real, m.kind === 'ko');
+        addEvolutionScore(statsByName[name], pts, m.kind === 'ko');
+      });
+    });
+
+    Object.entries(qualifierByDate[date] || {}).forEach(([name, pts]) => {
+      statsByName[name].total += pts;
+    });
+    snapshots.push(makeEvolutionSnapshot(faDate(date), date, players, statsByName));
+  });
+
+  return { snapshots, qualifierByDate };
+}
+
+function evolutionPlayerName(player) {
+  return player.name === 'Hamid' ? 'حمید' : player.faName;
+}
+
+function rankEvolutionColor(index) {
+  const colors = ['#f0a500','#27ae60','#3498db','#e74c3c','#9b59b6','#1abc9c','#ff8a80','#5dade2','#f7dc6f','#af7ac5'];
+  return colors[index % colors.length];
+}
+
+function renderRankEvolutionSvg(data, rankings) {
+  const snapshots = data.snapshots || [];
+  if (!snapshots.length) return '';
+
+  const width = 640, height = 290;
+  const left = 46, right = 18, top = 20, bottom = 56;
+  const plotW = width - left - right;
+  const plotH = height - top - bottom;
+  const allPointValues = snapshots.reduce((arr, s) => arr.concat(Object.values(s.values)), []);
+  const maxPoints = Math.max(1, ...allPointValues);
+  const tickStep = 20;
+  const yMax = Math.max(tickStep, Math.ceil(maxPoints / tickStep) * tickStep);
+  const x = i => snapshots.length === 1 ? left + plotW / 2 : left + (plotW * i / (snapshots.length - 1));
+  const y = v => top + ((yMax - v) / yMax) * plotH;
+  const ticks = [];
+  for (let t = 0; t <= yMax; t += tickStep) ticks.push(t);
+  const labelEvery = Math.max(1, Math.ceil(snapshots.length / 6));
+
+  const grid = ticks.map(t => {
+    const yy = y(t);
+    return `<line class="evo-grid" x1="${left}" y1="${yy}" x2="${width - right}" y2="${yy}"></line>
+      <text class="evo-label" x="${left - 8}" y="${yy + 4}" text-anchor="end">${t}</text>`;
+  }).join('');
+
+  const xLabels = snapshots.map((s, i) => {
+    if (i !== 0 && i !== snapshots.length - 1 && i % labelEvery !== 0) return '';
+    const xx = x(i);
+    return `<text class="evo-label" x="${xx}" y="${height - 24}" text-anchor="end" transform="rotate(-35 ${xx} ${height - 24})">${escapeHtml(s.label)}</text>`;
+  }).join('');
+
+  const lines = rankings.map((p, i) => {
+    const color = rankEvolutionColor(i);
+    const points = snapshots.map((s, idx) => `${x(idx).toFixed(1)},${y(s.values[p.name] || 0).toFixed(1)}`).join(' ');
+    const circles = snapshots.map((s, idx) => {
+      const value = s.values[p.name] || 0;
+      const rank = s.ranks[p.name] || '-';
+      const cx = x(idx).toFixed(1);
+      const cy = y(value).toFixed(1);
+      const title = `${evolutionPlayerName(p)}: ${value} امتیاز · رتبه ${rank} · ${s.label}`;
+      const safeTitle = escapeHtml(title);
+      return `<circle class="evo-hit" cx="${cx}" cy="${cy}" r="12" data-info="${safeTitle}" onclick="showEvolutionTip(event)" aria-label="${safeTitle}">
+        <title>${safeTitle}</title>
+      </circle>
+      <circle class="evo-point" cx="${cx}" cy="${cy}" r="4" fill="${color}" data-info="${safeTitle}" onclick="showEvolutionTip(event)" aria-label="${safeTitle}">
+        <title>${safeTitle}</title>
+      </circle>`;
+    }).join('');
+    return `<polyline class="evo-line" points="${points}" stroke="${color}"></polyline>${circles}`;
+  }).join('');
+
+  return `<svg class="evo-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="نمودار روند امتیازها">
+    ${grid}
+    <line class="evo-axis" x1="${left}" y1="${top}" x2="${left}" y2="${height - bottom}"></line>
+    <line class="evo-axis" x1="${left}" y1="${height - bottom}" x2="${width - right}" y2="${height - bottom}"></line>
+    <text class="evo-label" x="${left - 30}" y="${top + 12}" text-anchor="middle" transform="rotate(-90 ${left - 30} ${top + 12})">امتیاز</text>
+    ${xLabels}
+    ${lines}
+  </svg>`;
+}
+
+function showEvolutionTip(event) {
+  const target = event && event.currentTarget ? event.currentTarget : null;
+  const info = target ? target.getAttribute('data-info') : '';
+  const box = document.getElementById('evo-tip-box');
+  if (box && info) box.textContent = info;
+  if (event && event.stopPropagation) event.stopPropagation();
+}
+
+function buildRankEvolutionCard(rankings) {
+  const players = rankings.map(p => p.name);
+  const data = buildRankEvolutionData(players);
+  const card = document.createElement('div');
+  card.className = 'evo-card';
+
+  if (!data.snapshots.length) {
+    card.innerHTML = `<div class="evo-head">
+      <div>
+        <div class="evo-title">📈 مسیر امتیازها</div>
+        <div class="evo-sub">بعد از ثبت اولین نتیجه، روند روزانه امتیازها اینجا دیده می‌شود.</div>
+      </div>
+    </div>
+    <div class="evo-empty">هنوز داده‌ای برای رسم نمودار وجود ندارد.</div>`;
+    return card;
+  }
+
+  const latest = data.snapshots[data.snapshots.length - 1];
+  const topPlayer = rankings[0];
+  const defaultInfo = topPlayer ? `${evolutionPlayerName(topPlayer)}: ${latest.values[topPlayer.name] || 0} امتیاز · رتبه ${latest.ranks[topPlayer.name] || '-'} · ${latest.label}` : 'برای دیدن جزئیات، روی نقطه‌های نمودار بزنید.';
+  const legend = rankings.map((p, i) => {
+    const color = rankEvolutionColor(i);
+    return `<div class="evo-legend-item">
+      <span class="evo-dot" style="background:${color}"></span>
+      <span class="evo-name">${escapeHtml(evolutionPlayerName(p))}</span>
+      <span class="evo-meta">رتبه ${latest.ranks[p.name] || '-'} · ${latest.values[p.name] || 0}</span>
+    </div>`;
+  }).join('');
+
+  card.innerHTML = `<div class="evo-head">
+    <div>
+      <div class="evo-title">📈 مسیر امتیازها</div>
+      <div class="evo-sub">محور عمودی امتیاز تجمعی است و محور افقی روزهای بازی.</div>
+    </div>
+  </div>
+  <div class="evo-chart-wrap">${renderRankEvolutionSvg(data, rankings)}</div>
+  <div class="evo-tip-box" id="evo-tip-box">${escapeHtml(defaultInfo)}</div>
+  <div class="evo-legend">${legend}</div>`;
+  return card;
 }
 
 function matchTeamsFa(m) {
@@ -5837,6 +6104,7 @@ function getUnlockedRounds() {
   return rounds;
 }
 function getPredictions(player) {
+  if (!player) return {};
   if (!allPredictions[player]) allPredictions[player] = {};
   return allPredictions[player];
 }
@@ -5948,6 +6216,8 @@ fetchPredictionsOnline();
 
 function showPredictSection() {
   document.getElementById('predict-section').style.display = 'flex';
+  const customJoin = document.querySelector('.custom-join');
+  if (customJoin) customJoin.style.display = USE_LOCAL_PREDICTIONS_FILE_ONLY ? 'none' : 'block';
   document.getElementById('wbtn-predict').classList.add('active');
   document.getElementById('wbtn-view').classList.remove('active');
 }
@@ -5964,7 +6234,7 @@ function buildWelcome() {
   if (names.length > 0) {
     const lbl = document.createElement('div');
     lbl.style.cssText = 'font-size:.8rem;color:var(--dim);margin-bottom:.7rem;text-align:center';
-    lbl.textContent = 'یا از لیست انتخاب کنید:';
+    lbl.textContent = USE_LOCAL_PREDICTIONS_FILE_ONLY ? 'بازیکنان ثبت‌شده در predictions.json:' : 'یا از لیست انتخاب کنید:';
     section.appendChild(lbl);
     const grid = document.createElement('div');
     grid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:.6rem;width:100%';
@@ -6047,6 +6317,10 @@ function enterViewMode() {
 }
 
 function selectPlayer(name) {
+  if (USE_LOCAL_PREDICTIONS_FILE_ONLY && !allPredictions[name]) {
+    showToast('این نسخه فقط بازیکنان ثبت‌شده در predictions.json را نشان می‌دهد');
+    return;
+  }
   appMode = 'predict';
   currentPlayer = name;
   savePlayerName(name);
@@ -6070,6 +6344,10 @@ function switchPlayer() {
 }
 
 function joinCustom() {
+  if (USE_LOCAL_PREDICTIONS_FILE_ONLY) {
+    showToast('این نسخه فقط بازیکنان ثبت‌شده در predictions.json را نشان می‌دهد');
+    return;
+  }
   const inp = document.getElementById('custom-name');
   const name = inp.value.trim();
   if (!name) { inp.focus(); return; }
@@ -6495,8 +6773,6 @@ function setOnlineStatus(msg, kind) {
   el.className = `online-score-status ${kind || ''}`;
 }
 
-const AUTO_SCORE_CHECK_INTERVAL_MS = 15 * 60 * 1000;
-
 function maybeAutoUpdateRealScoresOnline(force = false) {
   const lastMs = Number(store.get('wc2026_real_last_online_update_ms') || 0);
   const due = force || !lastMs || (Date.now() - lastMs > AUTO_SCORE_CHECK_INTERVAL_MS);
@@ -6559,7 +6835,7 @@ async function updateRealTableOnline(btn) {
     const thirdsDone = realBestThirdTeams().length;
 
     if (currentFilter === 'real-table') buildRealTableView();
-    else if (currentFilter === 'rank') buildRankView();
+    else if (currentFilter === 'rank') { buildRankView(); scrollToRankTop(); }
     else if (currentFilter === 'ko') buildKnockoutView(currentKoRound);
     else if (currentFilter === 'real') { buildRealView(); scrollToCurrentDateIn('real-view'); }
 
@@ -6588,30 +6864,36 @@ async function fetchPredictionsOnline(silent = true, btn = null) {
     if (!onlinePreds) throw new Error('فرمت نادرست');
 
     let changed = false;
-    Object.entries(onlinePreds).forEach(([name, preds]) => {
-      if (name === currentPlayer) return;
-      const localCount = Object.keys(allPredictions[name] || {}).length;
-      const onlineCount = Object.keys(preds).length;
-      if (onlineCount > 0 && onlineCount >= localCount) {
-        allPredictions[name] = preds;
-        changed = true;
-      }
-    });
-    Object.entries(onlineKo).forEach(([name, preds]) => {
-      if (name === currentPlayer) return;
-      const localCount = Object.keys(koPredictions[name] || {}).length;
-      const onlineCount = Object.keys(preds).length;
-      if (onlineCount > 0 && onlineCount >= localCount) {
-        koPredictions[name] = preds;
-        changed = true;
-      }
-    });
+    if (USE_LOCAL_PREDICTIONS_FILE_ONLY) {
+      allPredictions = sanitizePreds(onlinePreds);
+      koPredictions = sanitizePreds(onlineKo);
+      changed = true;
+    } else {
+      Object.entries(onlinePreds).forEach(([name, preds]) => {
+        if (name === currentPlayer) return;
+        const localCount = Object.keys(allPredictions[name] || {}).length;
+        const onlineCount = Object.keys(preds).length;
+        if (onlineCount > 0 && onlineCount >= localCount) {
+          allPredictions[name] = preds;
+          changed = true;
+        }
+      });
+      Object.entries(onlineKo).forEach(([name, preds]) => {
+        if (name === currentPlayer) return;
+        const localCount = Object.keys(koPredictions[name] || {}).length;
+        const onlineCount = Object.keys(preds).length;
+        if (onlineCount > 0 && onlineCount >= localCount) {
+          koPredictions[name] = preds;
+          changed = true;
+        }
+      });
+    }
 
     if (changed) {
       saveData(); saveKoPreds();
       buildWelcome();
       if (currentFilter === 'compare') { buildPlayersBar(); buildResultsList(); scrollToCurrentDateIn('results-list'); }
-      else if (currentFilter === 'rank') buildRankView();
+      else if (currentFilter === 'rank') { buildRankView(); scrollToRankTop(); }
       else if (currentFilter === 'daily') buildDailyView();
       else if (currentFilter === 'real-table') buildRealTableView();
       else if (currentFilter === 'groups') buildGroupsView(currentPlayer);
@@ -6625,7 +6907,6 @@ async function fetchPredictionsOnline(silent = true, btn = null) {
     if (btn) { btn.disabled = false; btn.textContent = '⟳ sync'; }
   }
 }
-
 async function updateRealScoresOnline(btn) {
   if (btn) {
     btn.disabled = true;
@@ -6701,7 +6982,7 @@ async function updateRealScoresOnline(btn) {
     store.set('wc2026_real_last_online_update_ms', String(Date.now()));
 
     if (currentFilter === 'real') { buildRealView(); scrollToCurrentDateIn('real-view'); }
-    else if (currentFilter === 'rank') buildRankView();
+    else if (currentFilter === 'rank') { buildRankView(); scrollToRankTop(); }
     else if (currentFilter === 'daily') buildDailyView();
     else if (currentFilter === 'compare') { buildPlayersBar(); buildResultsList(); scrollToCurrentDateIn('results-list'); }
     else if (currentFilter === 'real-table') buildRealTableView();
@@ -6731,7 +7012,7 @@ function clearRealScores() {
   realScores = {};
   saveRealScores();
   if (currentFilter === 'real') buildRealView();
-  else if (currentFilter === 'rank') buildRankView();
+  else if (currentFilter === 'rank') { buildRankView(); scrollToRankTop(); }
   else if (currentFilter === 'daily') buildDailyView();
   else buildMatchList();
   showToast('نتایج واقعی پاک شد');
@@ -6759,8 +7040,9 @@ function showRankTab() {
   hideAllViews();
   document.getElementById('rank-view').style.display = 'block';
   buildRankView();
+  scrollToRankTop();
   maybeAutoUpdateRealScoresOnline();
-  maybeAutoUpdateRealTableOnline();
+  maybeAutoUpdateRealTableOnline(true);
 }
 
 function showDailyTab() {
@@ -7254,6 +7536,8 @@ function buildRankView() {
       </div>`;
     container.appendChild(card);
   });
+
+  container.appendChild(buildRankEvolutionCard(rankings));
 }
 
 // ── جدول روزانه ──
@@ -7421,13 +7705,13 @@ function rankTeams(teams, preds, groupMatches) {
 }
 
 function buildGroupsView(viewPlayer) {
-  const vp = viewPlayer || currentPlayer;
   const container = document.getElementById('groups-view');
   container.innerHTML = '';
 
   // نوار انتخاب بازیکن
   const allWithData = Object.keys(allPredictions).filter(p => Object.keys(allPredictions[p]||{}).length > 0);
-  const playersToShow = [...new Set([currentPlayer, ...allWithData])];
+  const playersToShow = [...new Set([...(currentPlayer ? [currentPlayer] : []), ...allWithData])].filter(p => allPredictions[p]);
+  const vp = (viewPlayer && allPredictions[viewPlayer]) ? viewPlayer : (playersToShow[0] || currentPlayer);
   if (playersToShow.length > 1) {
     const bar = document.createElement('div');
     bar.className = 'grp-player-bar';

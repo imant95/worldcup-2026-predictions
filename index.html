@@ -262,10 +262,6 @@ button{cursor:pointer;font-family:inherit}
 .del-btn{background:none;border:1px solid rgba(231,76,60,.4);color:#e74c3c;padding:.3rem .65rem;border-radius:8px;font-size:.72rem;font-weight:700;font-family:inherit;cursor:pointer;transition:all .15s;white-space:nowrap}
 .del-btn:active{background:rgba(231,76,60,.15)}
 
-/* ── خروجی HTML ── */
-.export-html-btn{background:var(--card2);border:1px solid var(--border);color:var(--text);padding:.85rem;border-radius:12px;font-size:.88rem;font-weight:700;flex:1;cursor:pointer;transition:all .15s}
-.export-html-btn:active{background:var(--card)}
-
 /* ── ورود آزاد ── */
 .custom-join{margin-top:1.5rem;width:100%;max-width:300px;text-align:center}
 .custom-join-label{font-size:.8rem;color:var(--dim);margin-bottom:.6rem}
@@ -325,13 +321,10 @@ button{cursor:pointer;font-family:inherit}
         </div>
         <div class="hdr-actions">
           <button class="del-btn" onclick="deleteMyPredictions()">حذف</button>
+          <button class="chip-btn" onclick="adminMergeJSON()">ادغام</button>
           <button class="chip-btn" onclick="switchPlayer()">تغییر بازیکن</button>
         </div>
       </div>
-      <div class="progress-wrap">
-        <div class="progress-fill" id="prog-fill" style="width:100%"></div>
-      </div>
-      <div class="progress-txt" id="prog-txt">۰ / ۷۲ بازی پیش‌بینی شده</div>
     </div>
     <!-- هدر حالت مشاهده -->
     <div id="hdr-view" style="display:none">
@@ -343,11 +336,7 @@ button{cursor:pointer;font-family:inherit}
 
   <!-- تب‌های ورود پیش‌بینی -->
   <div class="nav-tabs" id="predict-tabs">
-    <button class="tab-btn active" id="tab-all" onclick="filterTab('all')">همه</button>
-    <button class="tab-btn" id="tab-todo" onclick="filterTab('todo')">باقی‌مانده</button>
-    <button class="tab-btn" id="tab-done" onclick="filterTab('done')">انجام‌شده ✓</button>
-    <button class="tab-btn" id="tab-ko" onclick="showKnockoutTab()">حذفی 🔒</button>
-    <button class="tab-btn" id="tab-groups" onclick="showGroupsTab()">گروه‌ها</button>
+    <button class="tab-btn active" id="tab-ko" onclick="showKnockoutTab()">حذفی 🔒</button>
   </div>
   <!-- تب‌های مشاهده -->
   <div class="nav-tabs" id="view-tabs" style="display:none">
@@ -4726,8 +4715,7 @@ button{cursor:pointer;font-family:inherit}
   <!-- نوار پایین — حالت پیش‌بینی -->
   <div class="bottom-bar" id="bottom-predict">
     <button class="bbtn secondary" onclick="goHome()">🏠 خانه</button>
-    <button class="export-html-btn" onclick="exportHTML()">📦 خروجی HTML</button>
-    <button class="bbtn secondary" onclick="exportAllJSON()" style="flex:0;white-space:nowrap;font-size:.78rem">خروجی JSON</button>
+    <button class="bbtn secondary" onclick="exportJSON()" style="white-space:nowrap">خروجی JSON</button>
   </div>
   <!-- نوار پایین — حالت مشاهده -->
   <div class="bottom-bar" id="bottom-view" style="display:none">
@@ -4939,7 +4927,7 @@ const MATCHES = [
   {id:71, date:"Sun Jun 28", time:"03:00", t1:"Jordan",         t2:"Argentina",        grp:"J"},
 ];
 
-// ── داده از پیش بارگذاری شده (برای خروجی HTML) ──
+// ── داده از پیش بارگذاری شده ──
 const BAKED_DATA = {"p":{},"r":{},"kp":{},"kr":{}}; // __BAKED_DATA__
 
 // ── وضعیت ──
@@ -4954,6 +4942,7 @@ let koReal = {};          // { matchId: [s1,s2] }
 let currentFilter = 'all';
 let currentKoRound = 'R32';
 let currentDailyDate = null;
+const ADMIN_MERGE_CODE = 'MERGE2026';
 
 // ── ذخیره‌سازی امن ──
 // وقتی فایل با content:// یا file:// باز می‌شود، دسترسی به localStorage خطا می‌دهد.
@@ -6244,8 +6233,7 @@ function buildWelcome() {
       const btn = document.createElement('button');
       btn.className = 'player-btn';
       btn.style.width = '100%';
-      const done = Object.keys(allPredictions[name] || {}).length;
-      btn.innerHTML = `<span class="player-avatar">👤</span>${name}${done > 0 ? `<br><small style="font-size:.65rem;color:var(--gold);font-weight:600">${done}/72</small>` : ''}`;
+      btn.innerHTML = `<span class="player-avatar">👤</span>${name}`;
       btn.onclick = () => selectPlayer(name);
       const del = document.createElement('button');
       del.textContent = '✕';
@@ -6329,7 +6317,7 @@ function selectPlayer(name) {
   document.getElementById('welcome').style.display = 'none';
   document.getElementById('main').style.display = 'block';
   showPredictTabs();
-  buildMatchList();
+  showKnockoutTab();
   updateProgress();
 }
 
@@ -6515,9 +6503,7 @@ function refreshCard(matchId) {
 }
 
 function updateProgress() {
-  const done = Object.keys(getPredictions(currentPlayer)).length;
-  document.getElementById('prog-fill').style.width = (done / 72 * 100) + '%';
-  document.getElementById('prog-txt').textContent = `${done} / ۷۲ بازی پیش‌بینی شده`;
+  // Group-stage progress is no longer shown in prediction-entry mode.
 }
 
 function hideAllViews() {
@@ -6528,7 +6514,8 @@ function hideAllViews() {
 function filterTab(f) {
   currentFilter = f;
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + f).classList.add('active');
+  const tab = document.getElementById('tab-' + f);
+  if (tab) tab.classList.add('active');
   hideAllViews();
   document.getElementById('match-list').style.display = 'block';
   buildMatchList();
@@ -6538,7 +6525,8 @@ function showGroupsTab() {
   currentFilter = 'groups';
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   const btnId = appMode === 'view' ? 'tab-groups-v' : 'tab-groups';
-  document.getElementById(btnId).classList.add('active');
+  const btn = document.getElementById(btnId);
+  if (btn) btn.classList.add('active');
   hideAllViews();
   document.getElementById('groups-view').style.display = 'block';
   buildGroupsView(currentPlayer);
@@ -7849,19 +7837,21 @@ function buildGroupsView(viewPlayer) {
 
 // ── خروجی ──
 function exportJSON() {
-  // Ask which player to export
-  const available = Object.keys(allPredictions).filter(p=>Object.keys(allPredictions[p]).length>0);
+  const available = playersWithPredictionData();
   if (available.length === 0) { showToast('هیچ پیش‌بینی‌ای برای خروجی وجود ندارد'); return; }
-  const options = available.map((p,i)=>{
-    const pobj=PLAYERS.find(x=>x.name===p);
-    return `${i+1}. ${pobj?pobj.faName:p}`;
-  }).join('\n');
-  const choice = prompt(`کدام بازیکن را خروجی بگیریم؟\n\n${options}\n\nشماره را وارد کنید:`);
-  if (!choice) return;
-  const idx = parseInt(choice) - 1;
-  if (isNaN(idx) || idx < 0 || idx >= available.length) { showToast('انتخاب نامعتبر'); return; }
-  const targetPlayer = available[idx];
-  const preds = getPredictions(targetPlayer);
+  let targetPlayer = currentPlayer && available.includes(currentPlayer) ? currentPlayer : null;
+  if (!targetPlayer) {
+    const options = available.map((p,i)=>{
+      const pobj=PLAYERS.find(x=>x.name===p);
+      return `${i+1}. ${pobj?pobj.faName:p}`;
+    }).join('\n');
+    const choice = prompt(`کدام بازیکن را خروجی بگیریم؟\n\n${options}\n\nشماره را وارد کنید:`);
+    if (!choice) return;
+    const idx = parseInt(choice) - 1;
+    if (isNaN(idx) || idx < 0 || idx >= available.length) { showToast('انتخاب نامعتبر'); return; }
+    targetPlayer = available[idx];
+  }
+  const preds = allPredictions[targetPlayer] || {};
   const p = PLAYERS.find(x => x.name === targetPlayer);
   const data = {
     player: targetPlayer,
@@ -7908,21 +7898,6 @@ function exportAllJSON() {
   showToast('predictions.json آماده — در ریپو گیت‌هاب کامیت کنید');
 }
 
-function exportHTML() {
-  const src = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
-  const baked = JSON.stringify({p:allPredictions, r:realScores, kp:koPredictions, kr:koReal});
-  const out = src.replace(/const BAKED_DATA = .*?; \/\/ __BAKED_DATA__/s,
-                          `const BAKED_DATA = ${baked}; // __BAKED_DATA__`);
-  const blob = new Blob([out], {type:'text/html;charset=utf-8'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'jj2026_کامل.html';
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast('فایل HTML کامل صادر شد! همه داده‌ها در آن هستند.');
-}
-
 // ── ورودی ──
 function importJSON() {
   const inp = document.createElement('input');
@@ -7935,45 +7910,105 @@ function triggerImport() {
   document.getElementById('file-input').click();
 }
 
-function handleImport(e) {
-  const files = Array.from(e.target.files || []);
-  let loaded = 0;
-  files.forEach(f => {
+function mergePredictionMap(target, source) {
+  const clean = sanitizePreds(source);
+  let merged = 0;
+  Object.entries(clean).forEach(([name, preds]) => {
+    if (!target[name]) target[name] = {};
+    Object.assign(target[name], preds);
+    merged++;
+  });
+  return merged;
+}
+
+function mergeSinglePlayerJSON(d) {
+  if (!d || !d.player || !d.predictions) return false;
+  if (!allPredictions[d.player]) allPredictions[d.player] = {};
+  Object.entries(d.predictions).forEach(([id, info]) => {
+    if (isScorePair(info)) {
+      allPredictions[d.player][id] = [Number(info[0]), Number(info[1])];
+      return;
+    }
+    if (!info || info.t1_goals === null || info.t2_goals === null) return;
+    const t1 = Number(info.t1_goals), t2 = Number(info.t2_goals);
+    if (Number.isFinite(t1) && Number.isFinite(t2)) allPredictions[d.player][id] = [t1, t2];
+  });
+  if (d.koPredictions) {
+    const cleanKo = sanitizePreds({[d.player]: d.koPredictions})[d.player] || {};
+    if (!koPredictions[d.player]) koPredictions[d.player] = {};
+    Object.assign(koPredictions[d.player], cleanKo);
+  }
+  return true;
+}
+
+function mergePredictionJSONData(d) {
+  if (d && d.player && d.predictions) return mergeSinglePlayerJSON(d);
+  if (d && d.predictions && typeof d.predictions === 'object') {
+    mergePredictionMap(allPredictions, d.predictions);
+    if (d.koPredictions) mergePredictionMap(koPredictions, d.koPredictions);
+    if (d.realScores) Object.assign(realScores, sanitizeScoreMap(d.realScores));
+    if (d.koReal) Object.assign(koReal, sanitizeKoMap(d.koReal));
+    return true;
+  }
+  if (d && typeof d === 'object') {
+    return mergePredictionMap(allPredictions, d) > 0;
+  }
+  return false;
+}
+
+function refreshAfterPredictionImport() {
+  saveData();
+  saveKoPreds();
+  buildWelcome();
+  if (currentFilter === 'compare') { buildPlayersBar(); buildResultsList(); }
+  else if (currentFilter === 'rank') { buildRankView(); scrollToRankTop(); }
+  else if (currentFilter === 'daily') buildDailyView();
+  else if (currentFilter === 'groups') buildGroupsView(currentPlayer);
+  else if (currentFilter === 'ko') buildKnockoutView(currentKoRound);
+}
+
+function readJSONFile(file) {
+  return new Promise(resolve => {
     const reader = new FileReader();
     reader.onload = ev => {
-      try {
-        const d = JSON.parse(ev.target.result);
-        if (d.player && d.predictions) {
-          // فرمت تکی هر بازیکن
-          allPredictions[d.player] = {};
-          Object.entries(d.predictions).forEach(([id, info]) => {
-            if (info.t1_goals !== null && info.t2_goals !== null)
-              allPredictions[d.player][id] = [info.t1_goals, info.t2_goals];
-          });
-          if (d.koPredictions) { koPredictions[d.player] = d.koPredictions; saveKoPreds(); }
-          loaded++;
-          saveData();
-          if (loaded === files.length) {
-            showToast(`${loaded} فایل پیش‌بینی وارد شد!`);
-            buildResultsList(); buildPlayersBar();
-          }
-        } else if (d.predictions && typeof d.predictions === 'object') {
-          // فرمت کامل با نتایج واقعی
-          Object.assign(allPredictions, d.predictions); saveData();
-          if (d.realScores)     { Object.assign(realScores, d.realScores); saveRealScores(); }
-          if (d.koPredictions)  { Object.assign(koPredictions, d.koPredictions); saveKoPreds(); }
-          if (d.koReal)         { Object.assign(koReal, d.koReal); saveKoReal(); }
-          showToast('پیش‌بینی‌ها و نتایج وارد شدند!');
-          buildResultsList(); buildPlayersBar();
-        } else if (typeof d === 'object') {
-          Object.assign(allPredictions, d); saveData();
-          showToast('پیش‌بینی‌ها وارد شدند!');
-          buildResultsList(); buildPlayersBar();
-        }
-      } catch(err) { showToast('خطا در خواندن فایل'); }
+      try { resolve({ok:true, data:JSON.parse(ev.target.result)}); }
+      catch (err) { resolve({ok:false, error:err}); }
     };
-    reader.readAsText(f);
+    reader.onerror = () => resolve({ok:false, error:reader.error});
+    reader.readAsText(file);
   });
+}
+
+async function importPredictionFiles(fileList, options = {}) {
+  const files = Array.from(fileList || []);
+  if (!files.length) return;
+  const results = await Promise.all(files.map(readJSONFile));
+  let loaded = 0, failed = 0;
+  results.forEach(result => {
+    if (!result.ok || !mergePredictionJSONData(result.data)) failed++;
+    else loaded++;
+  });
+  if (loaded) refreshAfterPredictionImport();
+  if (failed) showToast(`${loaded} فایل وارد شد؛ ${failed} فایل خطا داشت`);
+  else showToast(`${loaded} فایل پیش‌بینی وارد شد!`);
+  if (options.exportCombined && loaded) exportAllJSON();
+}
+
+function handleImport(e) {
+  importPredictionFiles(e.target.files);
+  e.target.value = '';
+}
+
+function adminMergeJSON() {
+  const code = prompt('رمز مدیر برای ادغام فایل‌ها را وارد کنید:');
+  if (code === null) return;
+  if (code !== ADMIN_MERGE_CODE) { showToast('رمز مدیر درست نیست'); return; }
+  const inp = document.createElement('input');
+  inp.type = 'file';
+  inp.accept = '.json';
+  inp.multiple = true;
+  inp.onchange = e => importPredictionFiles(e.target.files, {exportCombined:true});
+  inp.click();
 }
 
 // ── مقایسه ──
@@ -8006,14 +8041,14 @@ function showMain() {
     showRankTab();
   } else {
     showPredictTabs();
-    if (['compare','rank','daily','real','real-table'].includes(currentFilter)) filterTab('all');
+    showKnockoutTab(currentKoRound);
   }
 }
 
 function buildPlayersBar() {
   const bar = document.getElementById('players-bar');
   bar.innerHTML = '';
-  const playersWithData = Object.keys(allPredictions).filter(p => Object.keys(allPredictions[p] || {}).length > 0);
+  const playersWithData = playersWithPredictionData();
   if (activeResultsPlayers === null) activeResultsPlayers = new Set(playersWithData);
 
   const allBtn = document.createElement('div');
@@ -8036,10 +8071,31 @@ function buildPlayersBar() {
   });
 }
 
+function compareTeamInfo(m) {
+  if (m.kind === 'ko') {
+    const t1raw = resolveSlot(m.s1);
+    const t2raw = resolveSlot(m.s2);
+    return {
+      f1: t1raw ? (FLAGS[t1raw] || '🏳') : '❓',
+      f2: t2raw ? (FLAGS[t2raw] || '🏳') : '❓',
+      fa1: t1raw ? teamFa(t1raw) : slotLabel(m.s1),
+      fa2: t2raw ? teamFa(t2raw) : slotLabel(m.s2),
+      meta: `${FA_ROUNDS[m.round] || m.round} · ${faDate(m.date)} ${m.time}`
+    };
+  }
+  return {
+    f1: FLAGS[m.t1] || '🏳',
+    f2: FLAGS[m.t2] || '🏳',
+    fa1: teamFa(m.t1),
+    fa2: teamFa(m.t2),
+    meta: `گروه ${m.grp} · ${faDate(m.date)} ${m.time}`
+  };
+}
+
 function buildResultsList() {
   const list = document.getElementById('results-list');
   list.innerHTML = '';
-  const players = activeResultsPlayers ? Array.from(activeResultsPlayers) : Object.keys(allPredictions);
+  const players = activeResultsPlayers ? Array.from(activeResultsPlayers) : playersWithPredictionData();
 
   if (players.length === 0) {
     list.innerHTML = '<div style="text-align:center;color:var(--dim);padding:2rem">هنوز پیش‌بینی‌ای برای مقایسه وجود ندارد.<br>دکمه ⟳ sync را بزنید تا پیش‌بینی‌ها از گیت‌هاب دریافت شوند.</div>';
@@ -8047,9 +8103,9 @@ function buildResultsList() {
   }
 
   let currentDate = null;
-  chronologicalMatches(MATCHES).forEach(m => {
+  allMatchItems().sort((a, b) => matchDateValue(a) - matchDateValue(b)).forEach(m => {
     const picks = players.map(p => ({
-      player: p, pick: (allPredictions[p] && allPredictions[p][m.id]) || undefined
+      player: p, pick: predictionForMatchItem(p, m)
     })).filter(x => Array.isArray(x.pick) && x.pick.length >= 2);
     if (picks.length === 0) return;
 
@@ -8062,17 +8118,15 @@ function buildResultsList() {
       list.appendChild(sep);
     }
 
-    const f1 = FLAGS[m.t1] || '🏳';
-    const f2 = FLAGS[m.t2] || '🏳';
-    const fa1 = FA_TEAMS[m.t1] || m.t1;
-    const fa2 = FA_TEAMS[m.t2] || m.t2;
-
+    const info = compareTeamInfo(m);
+    const isKo = m.kind === 'ko';
+    const real = realForMatchItem(m);
+    const realScore = scoreArray(real);
     const card = document.createElement('div');
     card.className = 'rcard';
-    const real = realScores[m.id];
     // در رابط فارسی (RTL)، تیم‌ها برعکس نمایش داده می‌شوند:
     // fa2 (t2) سمت راست، fa1 (t1) سمت چپ — پس امتیاز را هم معکوس نشان می‌دهیم
-    const realStr = real ? `<span style="color:var(--gold);font-weight:800;font-size:.8rem;direction:ltr"> (نتیجه: ${real[0]}–${real[1]})</span>` : '';
+    const realStr = realScore ? `<span style="color:var(--gold);font-weight:800;font-size:.8rem;direction:ltr"> (نتیجه: ${realScore[0]}–${realScore[1]})</span>` : '';
 
     const total  = picks.length;
     const t1w    = picks.filter(({pick}) => pick[0] > pick[1]).length;
@@ -8081,7 +8135,7 @@ function buildResultsList() {
     const t1pct  = Math.round(t1w / total * 100);
     const dpct   = Math.round(dr  / total * 100);
     const t2pct  = 100 - t1pct - dpct;
-    const ro     = real ? (real[0] > real[1] ? 't1' : real[0] === real[1] ? 'draw' : 't2') : null;
+    const ro     = realScore ? (realScore[0] > realScore[1] ? 't1' : realScore[0] === realScore[1] ? 'draw' : 't2') : null;
     const t1col  = ro === 't1'   ? 'var(--gold)' : 'var(--green)';
     const dcol   = ro === 'draw' ? 'var(--gold)' : '#4a5568';
     const t2col  = ro === 't2'   ? 'var(--gold)' : '#3498db';
@@ -8090,12 +8144,12 @@ function buildResultsList() {
     const t2lcol = ro === 't2'   ? 'var(--gold)' : '#5dade2';
 
     card.innerHTML = `
-      <div class="rcard-match">گروه ${m.grp} · ${faDate(m.date)} ${m.time}</div>
-      <div class="rcard-teams">${f1} ${fa1} در برابر ${fa2} ${f2}${realStr}</div>
+      <div class="rcard-match">${info.meta}</div>
+      <div class="rcard-teams">${info.f1} ${info.fa1} در برابر ${info.fa2} ${info.f2}${realStr}</div>
       <div class="rcard-picks">${
         picks.map(({player, pick}) => {
           const pobj = PLAYERS.find(x => x.name === player);
-          const pts = calcScore(pick, real);
+          const pts = calcScore(pick, real, isKo);
           const ptsTxt = pts !== null ? ` <span class="pts-badge p${pts}" style="margin-right:0">★${pts}</span>` : '';
           return `<div class="ppick${player === currentPlayer ? ' highlight' : ''}">
             <span class="pname">${pobj ? pobj.avatar : ''}${pobj ? pobj.faName : player}:</span>
@@ -8110,9 +8164,9 @@ function buildResultsList() {
           <div class="rsb-seg" style="width:${t1pct}%;background:${t1col}">${t1pct > 14 ? t1pct+'%' : ''}</div>
         </div>
         <div class="rsb-legend">
-          <span style="color:${t2lcol}">${f2} ${t2pct}%</span>
+          <span style="color:${t2lcol}">${info.f2} ${t2pct}%</span>
           <span style="color:${dlcol}">~ ${dpct}%</span>
-          <span style="color:${t1lcol}">${t1pct}% ${f1}</span>
+          <span style="color:${t1lcol}">${t1pct}% ${info.f1}</span>
         </div>
       </div>`;
     list.appendChild(card);

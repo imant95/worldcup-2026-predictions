@@ -103,6 +103,12 @@ button{cursor:pointer;font-family:inherit}
 .rsb-bar{display:flex;height:22px;border-radius:8px;overflow:hidden;gap:2px;background:var(--card2)}
 .rsb-seg{display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;color:rgba(255,255,255,.92);overflow:hidden;white-space:nowrap;min-width:0;transition:width .3s}
 .rsb-legend{display:flex;justify-content:space-between;font-size:.65rem;font-weight:700;margin-top:.3rem}
+.compare-real-card{margin-bottom:.65rem}
+.compare-picks-wrap{margin-top:.75rem;padding-top:.65rem;border-top:1px solid var(--border)}
+.compare-picks-title{font-size:.72rem;color:var(--gold);font-weight:800;margin-bottom:.45rem}
+.compare-picks{display:flex;flex-wrap:wrap;gap:.4rem}
+.compare-real-card .rcard-stat{margin-top:.65rem}
+.pen-readonly{margin-top:.55rem;background:rgba(240,165,0,.08);border:1px dashed rgba(240,165,0,.32);border-radius:10px;padding:.45rem .6rem;color:var(--gold);font-size:.7rem;font-weight:800;text-align:center}
 
 /* ── دکمه‌های انتخاب حالت (خوش‌آمد) ── */
 .wmode-wrap{display:flex;gap:.7rem;width:100%;max-width:300px;margin:1.5rem 0 .5rem}
@@ -212,7 +218,10 @@ button{cursor:pointer;font-family:inherit}
 .evo-hit{fill:rgba(255,255,255,0);stroke:none;cursor:pointer;pointer-events:all}
 .evo-tip-box{background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:.48rem .6rem;margin-top:.55rem;font-size:.7rem;font-weight:800;color:var(--text);line-height:1.55;text-align:right}
 .evo-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.4rem;margin-top:.7rem}
-.evo-legend-item{display:flex;align-items:center;gap:.4rem;background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:.42rem .5rem;min-width:0}
+.evo-legend-item{display:flex;align-items:center;gap:.4rem;background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:.42rem .5rem;min-width:0;font-family:inherit;text-align:right;cursor:pointer;color:inherit}
+.evo-legend-item.active{border-color:rgba(240,165,0,.8);background:rgba(240,165,0,.12)}
+.evo-legend-item:not(.active){opacity:.68}
+.evo-legend-item:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .evo-dot{width:.65rem;height:.65rem;border-radius:50%;flex-shrink:0}
 .evo-name{font-size:.7rem;font-weight:900;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .evo-meta{font-size:.62rem;color:var(--dim);margin-right:auto;white-space:nowrap}
@@ -253,6 +262,8 @@ button{cursor:pointer;font-family:inherit}
 .rtab{padding:.35rem .8rem;border-radius:20px;border:1.5px solid var(--border);background:var(--card);color:var(--dim);font-size:.75rem;font-weight:700;white-space:nowrap;cursor:pointer;transition:all .15s}
 .rtab.active{background:var(--green);color:#fff;border-color:var(--green-light)}
 .rtab.done{border-color:var(--gold);color:var(--gold)}
+.ko-warning{background:linear-gradient(135deg,rgba(240,165,0,.16),rgba(26,122,63,.10));border:1px solid rgba(240,165,0,.38);border-radius:12px;padding:.7rem .8rem;margin:0 0 .8rem;color:var(--text);font-size:.74rem;line-height:1.75;direction:rtl}
+.ko-warning strong{color:var(--gold);font-size:.82rem}
 .ko-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:.85rem .9rem;margin-bottom:.55rem;transition:border-color .2s}
 .ko-card.done{border-color:var(--green)}
 .ko-city{font-size:.65rem;color:var(--dim);margin-top:.15rem}
@@ -282,6 +293,75 @@ button{cursor:pointer;font-family:inherit}
 .online-score-status{font-size:.7rem;color:var(--dim);margin-top:.55rem;line-height:1.6}
 .online-score-status.ok{color:var(--green-light)}
 .online-score-status.err{color:var(--red)}
+
+/* ── دکمه اشتراک تصویر ── */
+.share-img-btn{background:var(--card2);border:1px solid var(--border);color:var(--dim);padding:.4rem .8rem;border-radius:8px;font-size:.78rem;font-weight:700;font-family:inherit;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:.3rem}
+.share-img-btn:active{background:var(--green);color:#fff;border-color:var(--green-light)}
+.share-img-btn:disabled{opacity:.5;cursor:wait}
+
+/* ── هیستوگرام گل ── */
+.histo-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:.85rem .9rem;margin-bottom:.75rem;overflow:hidden}
+.histo-title{font-size:.9rem;font-weight:900;color:var(--gold);margin-bottom:.2rem}
+.histo-sub{font-size:.68rem;color:var(--dim);margin-bottom:.65rem;line-height:1.6}
+.histo-player-tabs{display:flex;gap:.35rem;overflow-x:auto;margin-bottom:.7rem;scrollbar-width:none;padding-bottom:.3rem}
+.histo-player-tabs::-webkit-scrollbar{display:none}
+.histo-ptab{padding:.3rem .7rem;border-radius:20px;border:1.5px solid var(--border);background:var(--card);color:var(--dim);font-size:.75rem;font-weight:700;white-space:nowrap;cursor:pointer;transition:all .15s;font-family:inherit}
+.histo-ptab.active{background:var(--green);color:#fff;border-color:var(--green-light)}
+.histo-svg{display:block;width:100%;height:auto}
+.histo-bar-pred{fill:var(--gold);opacity:.85}
+.histo-bar-real{fill:var(--green-light);opacity:.85}
+.histo-label{fill:var(--dim);font-size:11px;font-weight:700}
+.histo-val{font-size:9px;font-weight:800;text-anchor:middle}
+.histo-legend{display:flex;gap:.8rem;justify-content:center;margin-top:.5rem}
+.histo-legend-item{display:flex;align-items:center;gap:.3rem;font-size:.68rem;color:var(--dim);font-weight:700}
+.histo-legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+
+/* ── کارت‌های مقایسه جدید ── */
+/* comparison cards render inline in rank-view */
+.cmp-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:.85rem .9rem;margin-bottom:.65rem;overflow:hidden}
+.cmp-title{font-size:.9rem;font-weight:900;color:var(--gold);margin-bottom:.2rem}
+.cmp-sub{font-size:.68rem;color:var(--dim);margin-bottom:.65rem;line-height:1.6}
+.cmp-pair{display:flex;align-items:center;gap:.5rem;background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:.55rem .65rem;margin-bottom:.4rem}
+.cmp-pair.highlight{border-color:rgba(240,165,0,.45);background:rgba(240,165,0,.06)}
+.cmp-pair.anti{border-color:rgba(52,152,219,.4);background:rgba(52,152,219,.06)}
+.cmp-pair-names{flex:1;font-size:.78rem;font-weight:800;color:var(--text);min-width:0}
+.cmp-pair-stat{font-size:.82rem;font-weight:900;color:var(--gold);white-space:nowrap}
+.cmp-pair-desc{font-size:.62rem;color:var(--dim);margin-top:.15rem}
+.cmp-match-row{display:flex;align-items:center;gap:.5rem;background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:.5rem .6rem;margin-bottom:.35rem;font-size:.75rem}
+.cmp-match-row.genius{border-color:rgba(39,174,96,.45);background:rgba(26,122,63,.08)}
+.cmp-match-row.stubborn{border-color:rgba(231,76,60,.4);background:rgba(231,76,60,.06)}
+.cmp-match-info{flex:1;min-width:0;font-weight:700;color:var(--text)}
+.cmp-match-detail{font-size:.65rem;color:var(--dim)}
+.cmp-player-tag{font-size:.7rem;font-weight:800;white-space:nowrap}
+.cmp-player-tag.genius{color:var(--green-light)}
+.cmp-player-tag.stubborn{color:var(--red)}
+.curse-team{display:flex;align-items:center;gap:.5rem;background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:.55rem .65rem;margin-bottom:.35rem}
+.curse-team.cursed{border-color:rgba(231,76,60,.4);background:rgba(231,76,60,.06)}
+.curse-team.blessed{border-color:rgba(39,174,96,.4);background:rgba(26,122,63,.06)}
+.curse-flag{font-size:1.2rem;flex-shrink:0}
+.curse-info{flex:1;min-width:0}
+.curse-team-name{font-size:.78rem;font-weight:800;color:var(--text)}
+.curse-stat{font-size:.65rem;color:var(--dim);margin-top:.1rem}
+.curse-rate{font-size:.8rem;font-weight:900;white-space:nowrap}
+.div-chart-wrap{direction:ltr;overflow-x:auto;padding:.25rem 0;scrollbar-width:thin}
+.div-svg{display:block;width:100%;min-width:500px;height:auto}
+.div-line{fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.div-label{fill:var(--dim);font-size:11px;font-weight:700}
+.div-grid{stroke:rgba(122,158,138,.16);stroke-width:1}
+.div-axis{stroke:rgba(122,158,138,.55);stroke-width:1}
+.div-legend{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.6rem;justify-content:center}
+.div-legend-item{display:flex;align-items:center;gap:.3rem;font-size:.68rem;color:var(--dim);font-weight:700}
+.div-legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.cmp-section{margin-top:.7rem;padding-top:.6rem;border-top:1px solid var(--border)}
+.cmp-section-title{font-size:.78rem;font-weight:800;color:var(--gold);margin-bottom:.45rem}
+
+/* ── آخرین ۱۰ نتیجه ── */
+.last10-wrap{display:flex;align-items:center;gap:3px;margin-top:.45rem;direction:ltr}
+.last10-dot{width:16px;height:16px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:.5rem;font-weight:900;color:#fff;flex-shrink:0}
+.last10-dot.exact{background:var(--gold)}
+.last10-dot.gd{background:var(--green)}
+.last10-dot.winner{background:var(--blue)}
+.last10-dot.zero{background:var(--red)}
 
 </style>
 </head>

@@ -420,12 +420,10 @@ button{cursor:pointer;font-family:inherit}
   </div>
   <!-- تب‌های مشاهده -->
   <div class="nav-tabs" id="view-tabs" style="display:none">
-    <button class="tab-btn active" id="tab-real" onclick="showRealTab()">نتایج واقعی</button>
-    <button class="tab-btn" id="tab-compare" onclick="showResults()">مقایسه</button>
-    <button class="tab-btn" id="tab-real-table" onclick="showRealTableTab()">جدول واقعی</button>
+    <button class="tab-btn active" id="tab-compare" onclick="showResults()">مقایسه</button>
     <button class="tab-btn" id="tab-rank" onclick="showRankTab()">جدول پیش‌بینی‌گران</button>
     <button class="tab-btn" id="tab-daily" onclick="showDailyTab()">جدول روزانه</button>
-    <button class="tab-btn" id="tab-groups-v" onclick="showGroupsTab()">گروه‌ها</button>
+    <button class="tab-btn" id="tab-group-stage" onclick="showGroupStageResultsTab()">نتایج مرحله گروهی</button>
   </div>
 
   <div class="content" id="match-list" style="display: block;"><div class="date-sep"><span>📅 پنج‌شنبه 11 ژوئن</span></div><div class="match-card done" id="card-0">
@@ -4762,16 +4760,16 @@ button{cursor:pointer;font-family:inherit}
         <span class="tname">آرژانتین</span>
       </div>
     </div></div><div style="text-align: center; color: var(--dim); padding: 1.5rem; font-size: 0.82rem;">🔒 مراحل حذفی پس از تکمیل نتایج گروهی قفل می‌شوند</div></div>
-  <div id="rank-view" style="display: none;"><div class="rank-summary">هنوز نتیجه‌ای در تب «نتایج» ثبت نشده است</div><div class="rank-card me">
+  <div id="rank-view" style="display: none;"><div class="rank-summary">هنوز نتیجه‌ای ثبت نشده است</div><div class="rank-card me">
       <div class="rank-pos">🥇</div>
       <div class="rank-avatar">👤</div>
       <div class="rank-info">
         <div class="rank-name">ایمان (شما)</div>
         <div class="rank-breakdown">
-          <span>🎯 دقیق×۴: 0</span>
-          <span>📐 تفاضل×۲: 0</span>
-          <span>✅ برنده×۱: 0</span>
-          <span>🎟️ صعود×۲: 0 (0)</span>
+          <span>🎯 دقیق: 0</span>
+          <span>📐 تفاضل: 0</span>
+          <span>✅ برنده: 0</span>
+          <span>🎟️ صعود: 0 (0)</span>
           <span>❌ اشتباه: 0</span>
         </div>
       </div>
@@ -4825,9 +4823,6 @@ window.addEventListener('error', function (e) {
 const PLAYERS = [];
 
 function getSavedNames() {
-  if (USE_LOCAL_PREDICTIONS_FILE_ONLY) {
-    return Object.keys(allPredictions || {}).filter(n => Object.keys(allPredictions[n] || {}).length > 0);
-  }
   const s = store.get('wc2026_fa_names');
   const stored = s ? JSON.parse(s) : [];
   const fromPreds = Object.keys(allPredictions || {});
@@ -4837,7 +4832,6 @@ function getSavedNames() {
 }
 
 function savePlayerName(name) {
-  if (USE_LOCAL_PREDICTIONS_FILE_ONLY) return;
   // اگر قبلاً حذف شده بود، از فهرست حذف‌شده‌ها بیرونش بیاور
   const removed = JSON.parse(store.get('wc2026_fa_removed') || '[]').filter(n => n !== name);
   store.set('wc2026_fa_removed', JSON.stringify(removed));
@@ -5008,7 +5002,7 @@ const MATCHES = [
 ];
 
 // ── داده از پیش بارگذاری شده ──
-const BAKED_DATA = {"p":{},"r":{},"kp":{},"kr":{}}; // __BAKED_DATA__
+const BAKED_DATA = {"p":{"ایمان":{"0":[1,0],"1":[1,1],"2":[1,0],"3":[1,0],"4":[0,2],"5":[0,1],"6":[0,1],"7":[4,0],"8":[2,1],"9":[2,1],"10":[0,1],"11":[1,0],"12":[3,0],"13":[2,0],"14":[2,0],"15":[2,0],"16":[0,2],"17":[2,0],"18":[2,0],"19":[3,0],"20":[2,1],"21":[0,2],"22":[1,1],"23":[0,1],"24":[0,0],"25":[1,0],"26":[2,1],"27":[1,0],"28":[2,0],"29":[2,0],"30":[1,0],"31":[1,0],"32":[2,1],"33":[0,1],"34":[2,0],"35":[0,1],"36":[2,0],"37":[2,0],"38":[0,2],"39":[1,0],"40":[3,0],"41":[3,0],"42":[1,1],"43":[0,2],"44":[2,0],"45":[2,0],"46":[1,2],"47":[2,0],"48":[2,1],"49":[1,0],"50":[1,1],"51":[1,2],"52":[0,2],"53":[0,1],"54":[1,3],"55":[2,0],"56":[1,1],"57":[0,2],"58":[1,1],"59":[1,1],"60":[1,2],"61":[1,0],"62":[0,2],"63":[0,2],"64":[1,1],"65":[0,4],"66":[0,2],"67":[2,0],"68":[0,2],"69":[1,1],"70":[1,1],"71":[0,2]},"آرش مازندرانی":{"0":[2,0],"1":[1,1],"2":[1,2],"3":[0,2],"4":[0,1],"5":[0,1],"6":[2,1],"7":[3,0],"8":[2,2],"9":[2,1],"10":[0,1],"11":[2,0],"12":[3,0],"13":[1,2],"14":[1,0],"15":[2,0],"16":[1,2],"17":[2,0],"18":[1,0],"19":[3,0],"20":[2,1],"21":[1,2],"22":[1,0],"23":[2,0],"24":[1,0],"25":[0,1],"26":[2,1],"27":[2,1],"28":[1,0],"29":[3,0],"30":[0,2],"31":[2,0],"32":[2,0],"33":[0,2],"34":[1,0],"35":[0,2],"36":[2,0],"37":[2,1],"38":[0,2],"39":[2,0],"40":[3,0],"41":[3,0],"42":[2,1],"43":[0,1],"44":[2,1],"45":[3,1],"46":[0,2],"47":[1,0],"48":[0,1],"49":[1,0],"50":[0,2],"51":[1,2],"52":[0,1],"53":[0,2],"54":[0,3],"55":[2,0],"56":[2,0],"57":[0,2],"58":[0,2],"59":[2,2],"60":[0,2],"61":[2,0],"62":[0,2],"63":[2,3],"64":[3,1],"65":[0,1],"66":[0,3],"67":[3,1],"68":[0,3],"69":[0,2],"70":[1,0],"71":[0,3]},"میلاد":{"0":[2,0],"1":[1,1],"2":[2,1],"3":[1,0],"4":[0,1],"5":[0,2],"6":[1,3],"7":[3,0],"8":[2,2],"9":[2,1],"10":[1,0],"11":[2,0],"12":[5,1],"13":[3,1],"14":[2,0],"15":[1,0],"16":[1,3],"17":[2,1],"18":[2,0],"19":[3,1],"20":[1,1],"21":[1,2],"22":[2,1],"23":[0,1],"24":[1,0],"25":[2,0],"26":[1,1],"27":[1,0],"28":[1,0],"29":[3,0],"30":[1,0],"31":[2,1],"32":[2,0],"33":[0,1],"34":[2,0],"35":[1,2],"36":[3,1],"37":[2,2],"38":[0,1],"39":[2,0],"40":[3,0],"41":[2,1],"42":[1,1],"43":[1,2],"44":[2,1],"45":[2,1],"46":[1,3],"47":[1,0],"48":[1,0],"49":[0,1],"50":[0,2],"51":[1,1],"52":[0,1],"53":[1,3],"54":[0,2],"55":[2,1],"56":[1,0],"57":[1,2],"58":[0,1],"59":[2,2],"60":[1,2],"61":[1,0],"62":[0,2],"63":[0,1],"64":[1,2],"65":[0,2],"66":[0,2],"67":[2,0],"68":[1,1],"69":[0,2],"70":[1,1],"71":[0,3]},"علیرضا":{"0":[1,1],"1":[0,2],"2":[1,0],"3":[1,2],"4":[1,3],"5":[0,2],"6":[2,1],"7":[4,1],"8":[2,1],"9":[2,0],"10":[1,1],"11":[1,1],"12":[4,1],"13":[2,1],"14":[1,1],"15":[2,1],"16":[0,2],"17":[3,1],"18":[3,1],"19":[4,1],"20":[2,1],"21":[0,2],"22":[2,2],"23":[0,2],"24":[1,1],"25":[1,1],"26":[2,1],"27":[1,1],"28":[2,1],"29":[3,0],"30":[1,2],"31":[1,0],"32":[1,0],"33":[1,1],"34":[1,0],"35":[0,2],"36":[2,0],"37":[1,0],"38":[1,1],"39":[2,1],"40":[3,0],"41":[1,0],"42":[0,1],"43":[1,1],"44":[4,0],"45":[2,1],"46":[1,2],"47":[2,1],"48":[1,1],"49":[2,0],"50":[1,1],"51":[1,1],"52":[0,2],"53":[1,3],"54":[0,2],"55":[2,1],"56":[1,1],"57":[0,2],"58":[1,0],"59":[1,1],"60":[0,3],"61":[1,0],"62":[0,0],"63":[1,3],"64":[1,1],"65":[0,1],"66":[1,2],"67":[1,1],"68":[1,2],"69":[2,0],"70":[1,2],"71":[0,3]},"Hamid":{"0":[2,1],"1":[1,1],"2":[1,1],"3":[2,1],"4":[1,3],"5":[0,2],"6":[1,3],"7":[5,0],"8":[2,2],"9":[2,2],"10":[1,1],"11":[1,0],"12":[5,1],"13":[3,1],"14":[2,0],"15":[3,1],"16":[1,2],"17":[3,0],"18":[2,0],"19":[3,0],"20":[1,1],"21":[1,3],"22":[1,0],"23":[1,2],"24":[2,0],"25":[2,1],"26":[2,1],"27":[2,1],"28":[2,1],"29":[3,0],"30":[1,1],"31":[1,0],"32":[1,1],"33":[1,2],"34":[2,0],"35":[0,2],"36":[3,0],"37":[3,0],"38":[0,1],"39":[2,1],"40":[3,0],"41":[2,0],"42":[2,2],"43":[1,1],"44":[2,1],"45":[1,0],"46":[0,2],"47":[2,0],"48":[1,0],"49":[1,0],"50":[1,1],"51":[1,1],"52":[0,1],"53":[1,2],"54":[1,3],"55":[2,0],"56":[1,1],"57":[0,2],"58":[1,1],"59":[1,0],"60":[2,3],"61":[2,0],"62":[1,1],"63":[1,2],"64":[1,1],"65":[0,3],"66":[0,2],"67":[1,1],"68":[1,1],"69":[0,1],"70":[1,2],"71":[0,3]},"مقداد":{"0":[2,0],"1":[1,1],"2":[2,0],"3":[2,1],"4":[0,2],"5":[0,2],"6":[1,2],"7":[5,0],"8":[2,1],"9":[1,1],"10":[1,1],"11":[2,0],"12":[4,0],"13":[2,1],"14":[1,0],"15":[2,1],"16":[0,3],"17":[3,0],"18":[3,0],"19":[3,0],"20":[2,0],"21":[0,3],"22":[2,1],"23":[0,2],"24":[2,0],"25":[2,0],"26":[1,1],"27":[2,0],"28":[3,0],"29":[4,0],"30":[2,1],"31":[2,0],"32":[2,1],"33":[0,2],"34":[3,0],"35":[0,2],"36":[3,0],"37":[2,0],"38":[1,2],"39":[2,0],"40":[4,0],"41":[3,0],"42":[2,1],"43":[0,1],"44":[3,0],"45":[3,0],"46":[0,2],"47":[2,0],"48":[1,1],"49":[2,0],"50":[1,2],"51":[1,1],"52":[0,3],"53":[0,3],"54":[0,3],"55":[3,0],"56":[2,1],"57":[0,3],"58":[1,2],"59":[1,0],"60":[1,2],"61":[2,0],"62":[1,1],"63":[1,2],"64":[1,1],"65":[0,4],"66":[0,3],"67":[2,1],"68":[1,2],"69":[2,1],"70":[1,2],"71":[0,3]},"مهرداد عسگری":{"0":[2,1],"1":[1,1],"2":[2,1],"3":[1,0],"4":[1,2],"5":[1,2],"6":[1,2],"7":[3,0],"8":[2,1],"9":[4,1],"10":[1,1],"11":[1,0],"12":[5,0],"13":[1,0],"14":[2,0],"15":[4,1],"16":[1,2],"17":[4,1],"18":[1,0],"19":[4,1],"20":[3,1],"21":[0,1],"22":[1,0],"23":[0,1],"24":[1,1],"25":[2,1],"26":[2,1],"27":[1,0],"28":[1,0],"29":[4,0],"30":[1,0],"31":[2,1],"32":[2,0],"33":[1,1],"34":[1,0],"35":[0,1],"36":[1,0],"37":[1,1],"38":[1,1],"39":[3,1],"40":[4,1],"41":[2,1],"42":[1,1],"43":[1,1],"44":[3,0],"45":[2,0],"46":[0,2],"47":[1,0],"48":[1,1],"49":[1,1],"50":[0,1],"51":[1,1],"52":[0,1],"53":[0,2],"54":[2,4],"55":[1,0],"56":[0,1],"57":[0,1],"58":[1,1],"59":[1,0],"60":[1,3],"61":[1,0],"62":[1,1],"63":[0,2],"64":[0,1],"65":[0,1],"66":[0,4],"67":[1,0],"68":[0,2],"69":[0,1],"70":[0,1],"71":[0,3]}},"r":{},"kp":{"ایمان":{},"آرش مازندرانی":{},"میلاد":{},"مهرداد عسگری":{}},"kr":{}}; // __BAKED_DATA__
 
 // ── وضعیت ──
 let currentPlayer = null;
@@ -5022,6 +5016,8 @@ let koReal = {};          // { matchId: [s1,s2] }
 let currentFilter = 'all';
 let currentKoRound = 'R32';
 let currentDailyDate = null;
+let activeEvolutionPlayers = new Set();
+let evolutionSelectionTouched = false;
 const ADMIN_MERGE_CODE = 'MERGE2026';
 
 // ── ذخیره‌سازی امن ──
@@ -5057,7 +5053,7 @@ const ONLINE_SCORE_SOURCE = {
 };
 
 const ONLINE_PREDICTIONS_SOURCE = {
-  name: 'پیش‌بینی‌های imant95',
+  name: 'پیش‌بینی‌های گیت‌هاب',
   url: 'https://raw.githubusercontent.com/imant95/worldcup-2026-predictions/main/predictions.json'
 };
 
@@ -5067,7 +5063,6 @@ const ONLINE_TABLE_SOURCE = {
 };
 
 const AUTO_SCORE_CHECK_INTERVAL_MS = 15 * 60 * 1000;
-const USE_LOCAL_PREDICTIONS_FILE_ONLY = true;
 
 // پاک‌سازی داده‌های خراب از حافظه‌ی مرورگر تا رندر خراب نشود
 function sanitizePreds(obj) {
@@ -5087,13 +5082,8 @@ function sanitizePreds(obj) {
 }
 
 function loadData() {
-  if (USE_LOCAL_PREDICTIONS_FILE_ONLY) {
-    allPredictions = {};
-    koPredictions = {};
-  } else {
-    try { const p = store.get('wc2026_fa_all');  if (p) allPredictions = JSON.parse(p); } catch (e) { allPredictions = {}; }
-    try { const kp = store.get('wc2026_fa_kp');  if (kp) koPredictions = JSON.parse(kp); } catch (e) { koPredictions = {}; }
-  }
+  try { const p = store.get('wc2026_fa_all');  if (p) allPredictions = JSON.parse(p); } catch (e) { allPredictions = {}; }
+  try { const kp = store.get('wc2026_fa_kp');  if (kp) koPredictions = JSON.parse(kp); } catch (e) { koPredictions = {}; }
   allPredictions = sanitizePreds(allPredictions);
   koPredictions  = sanitizePreds(koPredictions);
 
@@ -5107,7 +5097,7 @@ function loadData() {
 
   // اگر فایل HTML داده‌ی baked دارد، آن را با داده‌ی مرورگر «ادغام» کن
   // (به‌جای نادیده‌گرفتن یکی) تا با تعویض بازیکن هیچ داده‌ای حذف نشود.
-  if (!USE_LOCAL_PREDICTIONS_FILE_ONLY && BAKED_DATA) {
+  if (BAKED_DATA) {
     const removed = new Set(JSON.parse(store.get('wc2026_fa_removed') || '[]'));
     Object.entries(BAKED_DATA.p || {}).forEach(([name, preds]) => {
       if (removed.has(name)) return;
@@ -5146,6 +5136,7 @@ function calcScore(pred, real, isKo = false) {
   if (isKo) {
     if (exact)  return 8;
     if (sameGD) return 4;
+    if (sameW)  return 2;
     return 0;
   }
   if (exact)  return 4;
@@ -5168,7 +5159,7 @@ function calcPlayerTotal(playerName) {
     const pts = calcScore(koPreds[m.id], koReal[m.id], true);
     if (pts === null) return;
     total += pts;
-    if (pts === 8) exact++; else if (pts === 4) gdPts++; else zeroPts++;
+    if (pts === 8) exact++; else if (pts === 4) gdPts++; else if (pts === 2) winnerPts++; else zeroPts++;
   });
   // امتیاز صعود به یک‌سی‌ودوم: ۲ امتیاز برای هر تیمِ درست
   const q = calcQualifierPoints(playerName);
@@ -5203,6 +5194,7 @@ function scoreArray(v) {
 }
 
 function playerDisplayName(name) {
+  if (name === 'Hamid') return 'حمید';
   const pobj = PLAYERS.find(x => x.name === name);
   return pobj ? pobj.faName : name;
 }
@@ -5372,7 +5364,6 @@ function buildBadgeLeaders(rankings) {
     gd: badgeLeaderSet(rows, r => r.gd, { min: 1 }),
     winner: badgeLeaderSet(rows, r => r.winner, { min: 1 }),
     qual: badgeLeaderSet(rows, r => r.qual || 0, { min: 1 }),
-    ko: badgeLeaderSet(rows, r => r.profile.koCount, { min: 1 }),
     draws: badgeLeaderSet(rows, r => r.profile.draws, { min: 2, filter: r => r.profile.groupCount >= 20 }),
     antiDraw: badgeLeaderSet(rows, r => r.profile.draws, { minimize: true, max: 3, filter: r => r.profile.groupCount >= 40 }),
     offense: badgeLeaderSet(rows, r => Number(r.profile.avgGoals.toFixed(3)), { min: 3.1, filter: r => r.profile.groupCount >= 20 }),
@@ -5402,7 +5393,6 @@ function buildPredictionBadges(playerName, totals, leaders) {
   if (isBadgeLeader(leaders, 'gd', playerName)) add('📐', 'استاد تفاضل گل', 'blue', `${totals.gd} بار تفاضل گل درست؛ صدر این معیار`);
   if (isBadgeLeader(leaders, 'winner', playerName)) add('✅', 'شکارچی برنده', 'green', `${totals.winner} برنده درست؛ بیشترین بین بازیکنان`);
   if (isBadgeLeader(leaders, 'qual', playerName)) add('🎟️', 'پیش‌گوی صعود', 'hot', `${totals.qual || 0} تیم صعودکننده درست؛ بهترین آمار صعود`);
-  if (isBadgeLeader(leaders, 'ko', playerName)) add('🏆', 'حذفی‌باز', 'hot', `${p.koCount} بازی حذفی پیش‌بینی شده؛ بیشترین تعداد`);
   if (isBadgeLeader(leaders, 'draws', playerName)) add('🤝', 'عاشق تساوی', 'blue', `${p.draws} تساوی در پیش‌بینی‌ها؛ بیشترین بین بازیکنان`);
   if (isBadgeLeader(leaders, 'antiDraw', playerName)) add('⚔️', 'ضد تساوی', 'red', `${p.draws} تساوی در ${p.groupCount} پیش‌بینی؛ کمترین بین بازیکنان پرکار`);
   if (isBadgeLeader(leaders, 'offense', playerName)) add('🔥', 'فوتبال هجومی', 'red', `میانگین ${p.avgGoals.toFixed(1)} گل؛ هجومی‌ترین نگاه`);
@@ -5602,6 +5592,12 @@ function scrollToRankTop() {
   }, 80);
 }
 
+function scrollToGroupStageTop() {
+  setTimeout(() => {
+    if (window.scrollTo) window.scrollTo({ top: 0, behavior: 'auto' });
+  }, 80);
+}
+
 function allMatchItems() {
   return [
     ...MATCHES.map(m => ({...m, kind:'group'})),
@@ -5651,6 +5647,7 @@ function addEvolutionScore(stats, pts, isKo) {
   if (isKo) {
     if (pts === 8) stats.exact++;
     else if (pts === 4) stats.gd++;
+    else if (pts === 2) stats.winner++;
     else stats.zero++;
     return;
   }
@@ -5702,6 +5699,7 @@ function addEvolutionQualifierPoints(byDate, date, playerName, pts) {
 
 function qualifierPointsByFinishDate(players) {
   const byDate = {};
+  const finalDate = finalGroupStageDate();
   players.forEach(name => {
     const q = calcQualifierPoints(name);
     GROUP_LETTERS.forEach(grp => {
@@ -5786,7 +5784,7 @@ function renderRankEvolutionSvg(data, rankings) {
   }).join('');
 
   const lines = rankings.map((p, i) => {
-    const color = rankEvolutionColor(i);
+    const color = rankEvolutionColor(p.evoColorIndex !== undefined ? p.evoColorIndex : i);
     const points = snapshots.map((s, idx) => `${x(idx).toFixed(1)},${y(s.values[p.name] || 0).toFixed(1)}`).join(' ');
     const circles = snapshots.map((s, idx) => {
       const value = s.values[p.name] || 0;
@@ -5815,6 +5813,14 @@ function renderRankEvolutionSvg(data, rankings) {
   </svg>`;
 }
 
+function toggleEvolutionPlayer(name) {
+  if (!name) return;
+  evolutionSelectionTouched = true;
+  if (activeEvolutionPlayers.has(name)) activeEvolutionPlayers.delete(name);
+  else activeEvolutionPlayers.add(name);
+  buildRankView();
+}
+
 function showEvolutionTip(event) {
   const target = event && event.currentTarget ? event.currentTarget : null;
   const info = target ? target.getAttribute('data-info') : '';
@@ -5841,25 +5847,37 @@ function buildRankEvolutionCard(rankings) {
   }
 
   const latest = data.snapshots[data.snapshots.length - 1];
-  const topPlayer = rankings[0];
-  const defaultInfo = topPlayer ? `${evolutionPlayerName(topPlayer)}: ${latest.values[topPlayer.name] || 0} امتیاز · رتبه ${latest.ranks[topPlayer.name] || '-'} · ${latest.label}` : 'برای دیدن جزئیات، روی نقطه‌های نمودار بزنید.';
-  const legend = rankings.map((p, i) => {
+  const validNames = new Set(rankings.map(p => p.name));
+  activeEvolutionPlayers = evolutionSelectionTouched
+    ? new Set([...activeEvolutionPlayers].filter(name => validNames.has(name)))
+    : new Set(rankings.map(p => p.name));
+  const rankedWithColor = rankings.map((p, i) => ({...p, evoColorIndex: i}));
+  const visibleRankings = rankedWithColor.filter(p => activeEvolutionPlayers.has(p.name));
+  const firstVisible = visibleRankings[0];
+  const defaultInfo = firstVisible
+    ? `${evolutionPlayerName(firstVisible)}: ${latest.values[firstVisible.name] || 0} امتیاز · رتبه ${latest.ranks[firstVisible.name] || '-'} · ${latest.label}`
+    : 'برای رسم نمودار، بازیکنان را از لیست پایین انتخاب کنید.';
+  const legend = rankedWithColor.map((p, i) => {
     const color = rankEvolutionColor(i);
-    return `<div class="evo-legend-item">
+    const active = activeEvolutionPlayers.has(p.name);
+    return `<button type="button" class="evo-legend-item${active ? ' active' : ''}" data-player="${escapeHtml(p.name)}" onclick="toggleEvolutionPlayer(this.dataset.player)" aria-pressed="${active ? 'true' : 'false'}">
       <span class="evo-dot" style="background:${color}"></span>
       <span class="evo-name">${escapeHtml(evolutionPlayerName(p))}</span>
       <span class="evo-meta">رتبه ${latest.ranks[p.name] || '-'} · ${latest.values[p.name] || 0}</span>
-    </div>`;
+    </button>`;
   }).join('');
+  const chartHtml = visibleRankings.length
+    ? `<div class="evo-chart-wrap">${renderRankEvolutionSvg(data, visibleRankings)}</div>
+      <div class="evo-tip-box" id="evo-tip-box">${escapeHtml(defaultInfo)}</div>`
+    : `<div class="evo-empty">هیچ بازیکنی برای نمودار انتخاب نشده است.<br>از لیست پایین یک یا چند نفر را انتخاب کنید.</div>`;
 
   card.innerHTML = `<div class="evo-head">
     <div>
       <div class="evo-title">📈 مسیر امتیازها</div>
-      <div class="evo-sub">محور عمودی امتیاز تجمعی است و محور افقی روزهای بازی.</div>
+      <div class="evo-sub">برای مقایسه خلوت‌تر، بازیکنان دلخواه را از لیست پایین انتخاب کنید.</div>
     </div>
   </div>
-  <div class="evo-chart-wrap">${renderRankEvolutionSvg(data, rankings)}</div>
-  <div class="evo-tip-box" id="evo-tip-box">${escapeHtml(defaultInfo)}</div>
+  ${chartHtml}
   <div class="evo-legend">${legend}</div>`;
   return card;
 }
@@ -6339,8 +6357,6 @@ fetchPredictionsOnline();
 
 function showPredictSection() {
   document.getElementById('predict-section').style.display = 'flex';
-  const customJoin = document.querySelector('.custom-join');
-  if (customJoin) customJoin.style.display = USE_LOCAL_PREDICTIONS_FILE_ONLY ? 'none' : 'block';
   document.getElementById('wbtn-predict').classList.add('active');
   document.getElementById('wbtn-view').classList.remove('active');
   ensureRealTableForPrediction();
@@ -6358,7 +6374,7 @@ function buildWelcome() {
   if (names.length > 0) {
     const lbl = document.createElement('div');
     lbl.style.cssText = 'font-size:.8rem;color:var(--dim);margin-bottom:.7rem;text-align:center';
-    lbl.textContent = USE_LOCAL_PREDICTIONS_FILE_ONLY ? 'بازیکنان ثبت‌شده در predictions.json:' : 'یا از لیست انتخاب کنید:';
+    lbl.textContent = 'یا از لیست انتخاب کنید:';
     section.appendChild(lbl);
     const grid = document.createElement('div');
     grid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:.6rem;width:100%';
@@ -6434,16 +6450,12 @@ function enterViewMode() {
   document.getElementById('welcome').style.display = 'none';
   document.getElementById('main').style.display = 'block';
   showViewTabs();
-  showRealTab();
+  showResults();
   maybeAutoUpdateRealScoresOnline(true);
   fetchPredictionsOnline();
 }
 
 function selectPlayer(name) {
-  if (USE_LOCAL_PREDICTIONS_FILE_ONLY && !allPredictions[name]) {
-    showToast('این نسخه فقط بازیکنان ثبت‌شده در predictions.json را نشان می‌دهد');
-    return;
-  }
   appMode = 'predict';
   currentPlayer = name;
   savePlayerName(name);
@@ -6468,10 +6480,6 @@ function switchPlayer() {
 }
 
 function joinCustom() {
-  if (USE_LOCAL_PREDICTIONS_FILE_ONLY) {
-    showToast('این نسخه فقط بازیکنان ثبت‌شده در predictions.json را نشان می‌دهد');
-    return;
-  }
   const inp = document.getElementById('custom-name');
   const name = inp.value.trim();
   if (!name) { inp.focus(); return; }
@@ -6644,7 +6652,7 @@ function updateProgress() {
 
 function hideAllViews() {
   ['match-list','groups-view','knockout-view','real-view','real-table-view','rank-view','daily-view','compare-view']
-    .forEach(id => document.getElementById(id).style.display = 'none');
+    .forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
 }
 
 function filterTab(f) {
@@ -6658,10 +6666,13 @@ function filterTab(f) {
 }
 
 function showGroupsTab() {
+  if (appMode === 'view') {
+    showGroupStageResultsTab();
+    return;
+  }
   currentFilter = 'groups';
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  const btnId = appMode === 'view' ? 'tab-groups-v' : 'tab-groups';
-  const btn = document.getElementById(btnId);
+  const btn = document.getElementById('tab-groups');
   if (btn) btn.classList.add('active');
   hideAllViews();
   document.getElementById('groups-view').style.display = 'block';
@@ -6712,6 +6723,13 @@ function buildKnockoutView(roundOverride) {
     rtabs.appendChild(btn);
   });
   container.appendChild(rtabs);
+
+  const warning = document.createElement('div');
+  warning.className = 'ko-warning';
+  warning.innerHTML = `<strong>⚠️ پیش‌بینی حذفی حساس‌تر است</strong><br>
+    امتیازها دو برابرند: نتیجه دقیق ۸، تفاضل گل ۴، و برنده درست ۲ امتیاز دارد؛ پس با دقت پیش‌بینی کنید.
+    اگر بازی با پنالتی تمام شود، نتیجه رسمی بازی مساوی حساب می‌شود و فقط کسانی که مساوی پیش‌بینی کرده‌اند امتیاز می‌گیرند.`;
+  container.appendChild(warning);
 
   const roundMatches = KO.filter(m => m.round === activeRound);
   if (!roundMatches.length) return;
@@ -6878,7 +6896,7 @@ function addOnlineScorePanel(container) {
   panel.innerHTML = `
     <div class="online-score-title">🌐 به‌روزرسانی خودکار نتایج</div>
     <div class="online-score-text">
-      برنامه هنگام باز شدن سایت و همچنین هنگام ورود به تب‌های «نتایج واقعی» و «جدول پیش‌بینی‌گران» هر ۱۵ دقیقه یک‌بار نتایج اینترنتی را بررسی می‌کند. این دکمه هم بررسی دستی را انجام می‌دهد.
+      برنامه هنگام باز شدن سایت و همچنین هنگام ورود به تب‌های «مقایسه» و «جدول پیش‌بینی‌گران» هر ۱۵ دقیقه یک‌بار نتایج اینترنتی را بررسی می‌کند. این دکمه هم بررسی دستی را انجام می‌دهد.
       <br>آخرین بررسی: <strong>${last}</strong>
     </div>
     <div class="online-score-actions">
@@ -6974,7 +6992,8 @@ async function updateRealTableOnline(btn) {
     const groupsDone = realTableGroupsWithTopTwo().length;
     const thirdsDone = realBestThirdTeams().length;
 
-    if (currentFilter === 'real-table') buildRealTableView();
+    if (currentFilter === 'group-stage') buildGroupStageResultsView();
+    else if (currentFilter === 'real-table') buildRealTableView();
     else if (currentFilter === 'rank') { buildRankView(); scrollToRankTop(); }
     else if (currentFilter === 'ko') buildKnockoutView(currentKoRound);
     else if (currentFilter === 'real') { buildRealView(); scrollToCurrentDateIn('real-view'); }
@@ -7005,30 +7024,24 @@ async function fetchPredictionsOnline(silent = true, btn = null) {
     if (!onlinePreds) throw new Error('فرمت نادرست');
 
     let changed = false;
-    if (USE_LOCAL_PREDICTIONS_FILE_ONLY) {
-      allPredictions = sanitizePreds(onlinePreds);
-      koPredictions = sanitizePreds(onlineKo);
-      changed = true;
-    } else {
-      Object.entries(onlinePreds).forEach(([name, preds]) => {
-        if (name === currentPlayer) return;
-        const localCount = Object.keys(allPredictions[name] || {}).length;
-        const onlineCount = Object.keys(preds).length;
-        if (onlineCount > 0 && onlineCount >= localCount) {
-          allPredictions[name] = preds;
-          changed = true;
-        }
-      });
-      Object.entries(onlineKo).forEach(([name, preds]) => {
-        if (name === currentPlayer) return;
-        const localCount = Object.keys(koPredictions[name] || {}).length;
-        const onlineCount = Object.keys(preds).length;
-        if (onlineCount > 0 && onlineCount >= localCount) {
-          koPredictions[name] = preds;
-          changed = true;
-        }
-      });
-    }
+    Object.entries(onlinePreds).forEach(([name, preds]) => {
+      if (name === currentPlayer) return;
+      const localCount = Object.keys(allPredictions[name] || {}).length;
+      const onlineCount = Object.keys(preds).length;
+      if (onlineCount > 0 && onlineCount >= localCount) {
+        allPredictions[name] = preds;
+        changed = true;
+      }
+    });
+    Object.entries(onlineKo).forEach(([name, preds]) => {
+      if (name === currentPlayer) return;
+      const localCount = Object.keys(koPredictions[name] || {}).length;
+      const onlineCount = Object.keys(preds).length;
+      if (onlineCount > 0 && onlineCount >= localCount) {
+        koPredictions[name] = preds;
+        changed = true;
+      }
+    });
 
     if (changed) {
       saveData(); saveKoPreds();
@@ -7036,6 +7049,7 @@ async function fetchPredictionsOnline(silent = true, btn = null) {
       if (currentFilter === 'compare') { buildPlayersBar(); buildResultsList(); scrollToCurrentDateIn('results-list'); }
       else if (currentFilter === 'rank') { buildRankView(); scrollToRankTop(); }
       else if (currentFilter === 'daily') buildDailyView();
+      else if (currentFilter === 'group-stage') buildGroupStageResultsView();
       else if (currentFilter === 'real-table') buildRealTableView();
       else if (currentFilter === 'groups') buildGroupsView(currentPlayer);
     }
@@ -7048,6 +7062,7 @@ async function fetchPredictionsOnline(silent = true, btn = null) {
     if (btn) { btn.disabled = false; btn.textContent = '⟳ sync'; }
   }
 }
+
 async function updateRealScoresOnline(btn) {
   if (btn) {
     btn.disabled = true;
@@ -7160,17 +7175,7 @@ function clearRealScores() {
 }
 
 function showRealTab() {
-  currentFilter = 'real';
-  document.getElementById('results').style.display = 'none';
-  document.getElementById('main').style.display = 'block';
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-real').classList.add('active');
-  hideAllViews();
-  document.getElementById('real-view').style.display = 'block';
-  buildRealView();
-  scrollToCurrentDateIn('real-view');
-  maybeAutoUpdateRealScoresOnline(true);
-  ensureRealTableOnline();
+  showResults();
 }
 
 function showRankTab() {
@@ -7200,14 +7205,40 @@ function showDailyTab() {
 }
 
 function showRealTableTab() {
-  currentFilter = 'real-table';
+  showGroupStageResultsTab();
+}
+
+function buildGroupStageResultsView() {
+  const realTableEl = document.getElementById('real-table-view');
+  const groupsEl = document.getElementById('groups-view');
+  if (realTableEl && groupsEl && realTableEl.parentNode === groupsEl.parentNode && realTableEl.nextElementSibling !== groupsEl) {
+    groupsEl.parentNode.insertBefore(realTableEl, groupsEl);
+  }
+  realTableEl.style.display = 'block';
+  groupsEl.style.display = 'block';
+  buildRealTableView();
+  buildGroupsView(currentPlayer);
+  addGroupPredictionsHeading();
+}
+
+function addGroupPredictionsHeading() {
+  const groupsEl = document.getElementById('groups-view');
+  if (!groupsEl || groupsEl.querySelector('.group-prediction-heading')) return;
+  groupsEl.insertAdjacentHTML('afterbegin',
+    '<div class="real-table-note group-prediction-heading"><b>جدول‌های پیش‌بینی کاربران</b><br>جدول‌های زیر بر اساس پیش‌بینی‌های مرحله گروهی هر بازیکن ساخته شده‌اند.</div>'
+  );
+}
+
+function showGroupStageResultsTab() {
+  currentFilter = 'group-stage';
   document.getElementById('results').style.display = 'none';
   document.getElementById('main').style.display = 'block';
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-real-table').classList.add('active');
+  const tab = document.getElementById('tab-group-stage');
+  if (tab) tab.classList.add('active');
   hideAllViews();
-  document.getElementById('real-table-view').style.display = 'block';
-  buildRealTableView();
+  buildGroupStageResultsView();
+  scrollToGroupStageTop();
   maybeAutoUpdateRealTableOnline(true);
 }
 
@@ -7609,6 +7640,29 @@ function setPenaltyWinner(matchId, winner) {
 }
 
 // ── جدول پیش‌بینی‌گران ──
+function renderLast10Dots(playerName) {
+  const scored = scoredMatchItems();
+  const results = [];
+  scored.forEach(m => {
+    const pred = predictionForMatchItem(playerName, m);
+    const pts = calcScore(pred, m.real, m.kind === 'ko');
+    if (pts === null) return;
+    const isKo = m.kind === 'ko';
+    const isExact = isKo ? pts === 8 : pts === 4;
+    const isGd = isKo ? pts === 4 : pts === 2;
+    const isWinner = isKo ? pts === 2 : pts === 1;
+    results.push({ isExact, isGd, isWinner, zero: pts === 0, isKo });
+  });
+  const last = results.slice(-10);
+  if (!last.length) return '';
+  const dots = last.map(r => {
+    const cls = r.isExact ? 'exact' : r.isGd ? 'gd' : r.isWinner ? 'winner' : 'zero';
+    const lbl = r.isExact ? (r.isKo ? '8' : '4') : r.isGd ? (r.isKo ? '4' : '2') : r.isWinner ? (r.isKo ? '2' : '1') : '0';
+    return `<div class="last10-dot ${cls}">${lbl}</div>`;
+  }).join('');
+  return `<div class="last10-wrap">${dots}</div>`;
+}
+
 function buildRankView() {
   const container = document.getElementById('rank-view');
   container.innerHTML = '';
@@ -7617,9 +7671,10 @@ function buildRankView() {
 
   const summary = document.createElement('div');
   summary.className = 'rank-summary';
-  summary.textContent = gradedCount > 0
+  summary.innerHTML = (gradedCount > 0
     ? `نتایج ${gradedCount} بازی از ${MATCHES.length} بازی ثبت شده‌اند`
-    : 'هنوز نتیجه‌ای در تب «نتایج» ثبت نشده است';
+    : 'هنوز نتیجه‌ای ثبت نشده است') +
+    `<br><button class="share-img-btn" onclick="shareLeaderboardImage(this)">📸 اشتراک تصویر جدول</button>`;
   container.appendChild(summary);
 
   if (allPlayers.length === 0) {
@@ -7648,6 +7703,7 @@ function buildRankView() {
     const card = document.createElement('div');
     const moveHtml = renderMovePill(rankContext.movements[p.name]);
     const badgesHtml = renderPredictionBadges(p.name, p, badgeLeaders);
+    const last10Html = renderLast10Dots(p.name);
     card.className = `rank-card${p.name === currentPlayer ? ' me' : ''}`;
     card.innerHTML = `
       <div class="rank-pos">${i < 3 ? medals[i] : i + 1}</div>
@@ -7658,13 +7714,14 @@ function buildRankView() {
           ${moveHtml}
         </div>
         <div class="rank-breakdown">
-          <span>🎯 دقیق×۴: ${p.exact}</span>
-          <span>📐 تفاضل×۲: ${p.gd}</span>
-          <span>✅ برنده×۱: ${p.winner}</span>
-          <span>🎟️ صعود×۲: ${p.qual||0} (${p.qualPts||0})</span>
+          <span>🎯 دقیق: ${p.exact}</span>
+          <span>📐 تفاضل: ${p.gd}</span>
+          <span>✅ برنده: ${p.winner}</span>
+          <span>🎟️ صعود: ${p.qual||0} (${p.qualPts||0})</span>
           <span>❌ اشتباه: ${p.zero}</span>
         </div>
         ${badgesHtml}
+        ${last10Html}
       </div>
       <div class="rank-pts-col">
         <div class="rank-pts">${p.total}</div>
@@ -7674,6 +7731,10 @@ function buildRankView() {
   });
 
   container.appendChild(buildRankEvolutionCard(rankings));
+  container.appendChild(buildGoalHistogramCard(rankings));
+  buildTwinCard(container);
+  buildConsensusCard(container);
+  buildCurseCard(container);
 }
 
 // ── جدول روزانه ──
@@ -7846,8 +7907,8 @@ function buildGroupsView(viewPlayer) {
 
   // نوار انتخاب بازیکن
   const allWithData = Object.keys(allPredictions).filter(p => Object.keys(allPredictions[p]||{}).length > 0);
-  const playersToShow = [...new Set([...(currentPlayer ? [currentPlayer] : []), ...allWithData])].filter(p => allPredictions[p]);
-  const vp = (viewPlayer && allPredictions[viewPlayer]) ? viewPlayer : (playersToShow[0] || currentPlayer);
+  const playersToShow = [...new Set([currentPlayer, ...allWithData].filter(Boolean))];
+  const vp = viewPlayer || currentPlayer || allWithData[0] || null;
   if (playersToShow.length > 1) {
     const bar = document.createElement('div');
     bar.className = 'grp-player-bar';
@@ -7856,10 +7917,18 @@ function buildGroupsView(viewPlayer) {
       const tag = document.createElement('div');
       tag.className = 'grp-ptag' + (p === vp ? ' active' : '');
       tag.textContent = (pobj ? pobj.avatar + ' ' : '') + (pobj ? pobj.faName : p);
-      tag.onclick = () => buildGroupsView(p);
+      tag.onclick = () => {
+        buildGroupsView(p);
+        if (currentFilter === 'group-stage') addGroupPredictionsHeading();
+      };
       bar.appendChild(tag);
     });
     container.appendChild(bar);
+  }
+
+  if (!vp) {
+    container.innerHTML += '<div style="text-align:center;color:var(--dim);padding:3rem 1rem">هنوز پیش‌بینی‌ای برای نمایش جدول گروهی وجود ندارد.</div>';
+    return;
   }
 
   const preds = allPredictions[vp] || {};
@@ -8111,6 +8180,7 @@ function refreshAfterPredictionImport() {
   if (currentFilter === 'compare') { buildPlayersBar(); buildResultsList(); }
   else if (currentFilter === 'rank') { buildRankView(); scrollToRankTop(); }
   else if (currentFilter === 'daily') buildDailyView();
+  else if (currentFilter === 'group-stage') buildGroupStageResultsView();
   else if (currentFilter === 'groups') buildGroupsView(currentPlayer);
   else if (currentFilter === 'ko') buildKnockoutView(currentKoRound);
 }
@@ -8241,6 +8311,37 @@ function compareTeamInfo(m) {
   };
 }
 
+function compareRealScoreHtml(realScore) {
+  if (!realScore) return '<div class="real-pending">در انتظار نتیجه</div>';
+  return `<div class="score-row">
+    <div class="sval set">${realScore[1]}</div>
+    <span style="color:var(--dim);font-size:.9rem;margin:0 .1rem">:</span>
+    <div class="sval set">${realScore[0]}</div>
+  </div>`;
+}
+
+function comparePenaltyHtml(info, real) {
+  const sc = scoreArray(real);
+  if (!sc || sc[0] !== sc[1] || !real || Array.isArray(real)) return '';
+  const pw = real.pw;
+  if (pw !== 0 && pw !== 1) return '';
+  const winner = pw === 0 ? `${info.f1} ${info.fa1}` : `${info.f2} ${info.fa2}`;
+  return `<div class="pen-readonly">برنده پنالتی: ${escapeHtml(winner)}</div>`;
+}
+
+function comparePickPillsHtml(picks, real, isKo) {
+  return picks.map(({player, pick}) => {
+    const pobj = PLAYERS.find(x => x.name === player);
+    const label = pobj ? `${pobj.avatar} ${pobj.faName}` : playerDisplayName(player);
+    const pts = calcScore(pick, real, isKo);
+    const ptsTxt = pts !== null ? ` <span class="pts-badge p${pts}" style="margin-right:0">★${pts}</span>` : '';
+    return `<div class="ppick${player === currentPlayer ? ' highlight' : ''}">
+      <span class="pname">${escapeHtml(label)}:</span>
+      <span class="pscore">${Number(pick[1])}–${Number(pick[0])}</span>${ptsTxt}
+    </div>`;
+  }).join('');
+}
+
 function buildResultsList() {
   const list = document.getElementById('results-list');
   list.innerHTML = '';
@@ -8271,11 +8372,10 @@ function buildResultsList() {
     const isKo = m.kind === 'ko';
     const real = realForMatchItem(m);
     const realScore = scoreArray(real);
+
     const card = document.createElement('div');
-    card.className = 'rcard';
-    // در رابط فارسی (RTL)، تیم‌ها برعکس نمایش داده می‌شوند:
-    // fa2 (t2) سمت راست، fa1 (t1) سمت چپ — پس امتیاز را هم معکوس نشان می‌دهیم
-    const realStr = realScore ? `<span style="color:var(--gold);font-weight:800;font-size:.8rem;direction:ltr"> (نتیجه: ${realScore[0]}–${realScore[1]})</span>` : '';
+    card.className = `real-card compare-real-card${realScore ? ' recorded' : ''}`;
+    const tagLabel = isKo ? (FA_ROUNDS[m.round] || m.round) : `گروه ${m.grp}`;
 
     const total  = picks.length;
     const t1w    = picks.filter(({pick}) => pick[0] > pick[1]).length;
@@ -8293,19 +8393,29 @@ function buildResultsList() {
     const t2lcol = ro === 't2'   ? 'var(--gold)' : '#5dade2';
 
     card.innerHTML = `
-      <div class="rcard-match">${info.meta}</div>
-      <div class="rcard-teams">${info.f1} ${info.fa1} در برابر ${info.fa2} ${info.f2}${realStr}</div>
-      <div class="rcard-picks">${
-        picks.map(({player, pick}) => {
-          const pobj = PLAYERS.find(x => x.name === player);
-          const pts = calcScore(pick, real, isKo);
-          const ptsTxt = pts !== null ? ` <span class="pts-badge p${pts}" style="margin-right:0">★${pts}</span>` : '';
-          return `<div class="ppick${player === currentPlayer ? ' highlight' : ''}">
-            <span class="pname">${pobj ? pobj.avatar : ''}${pobj ? pobj.faName : player}:</span>
-            <span class="pscore">${pick[1]}–${pick[0]}</span>${ptsTxt}
-          </div>`;
-        }).join('')
-      }</div>
+      <div class="match-meta">
+        <span>${m.time}</span>
+        <span class="group-tag">${tagLabel}</span>
+      </div>
+      <div class="teams-row">
+        <div class="team-block">
+          <span class="flag">${info.f1}</span>
+          <span class="tname">${escapeHtml(info.fa1)}</span>
+        </div>
+        <div class="score-col">
+          <div class="vs">نتیجه نهایی</div>
+          ${compareRealScoreHtml(realScore)}
+        </div>
+        <div class="team-block">
+          <span class="flag">${info.f2}</span>
+          <span class="tname">${escapeHtml(info.fa2)}</span>
+        </div>
+      </div>
+      ${comparePenaltyHtml(info, real)}
+      <div class="compare-picks-wrap">
+        <div class="compare-picks-title">پیش‌بینی کاربران</div>
+        <div class="compare-picks">${comparePickPillsHtml(picks, real, isKo)}</div>
+      </div>
       <div class="rcard-stat">
         <div class="rsb-bar">
           <div class="rsb-seg" style="width:${t2pct}%;background:${t2col}">${t2pct > 14 ? t2pct+'%' : ''}</div>
@@ -8324,6 +8434,699 @@ function buildResultsList() {
   if (list.children.length === 0) {
     list.innerHTML = '<div style="text-align:center;color:var(--dim);padding:2rem">پیش‌بینی‌ای برای بازیکنان انتخاب شده یافت نشد.</div>';
   }
+}
+
+// ══════════════════════════════════════════════════════
+// ── فیچر ۵: اشتراک تصویر جدول ──
+// ══════════════════════════════════════════════════════
+
+function fa(n) {
+  return String(n).replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+}
+
+function getPlayerFunSentence(p, i, rankings) {
+  const profile = p.profile || predictionProfile(p.name);
+  const n = p.faName;
+
+  // build a pool of candidate sentences, pick the best fitting one
+  // each player gets exactly ONE unique sentence
+  if (i === 0 && rankings.length > 1) {
+    const gap = p.total - rankings[1].total;
+    if (gap > 20) return `👑 ${n} داره با دوربین بقیه رو نگاه می‌کنه`;
+    if (gap > 10) return `👑 ${n} راحت نشسته بالا و چایی می‌خوره`;
+    if (gap <= 3) return `👑 ${n} صدره ولی خوابش نمیاد از استرس`;
+    return `👑 ${n} فعلاً تاج رو سرشه`;
+  }
+  if (i === rankings.length - 1 && rankings.length > 2) {
+    if (p.zero > p.exact * 3) return `🪑 ${n} انگار با چشم بسته پیش‌بینی می‌کنه`;
+    if (p.exact > 0) return `🪑 ${n} ته جدوله ولی بلده گاهی درست بزنه`;
+    return `🪑 ${n} از پایین جدول داره لنگر میندازه`;
+  }
+
+  // stat-based unique sentences
+  if (p.exact > 0 && p.exact >= Math.max(...rankings.map(r => r.exact)))
+    return `🔮 ${n} فکر کنم دسترسی به نتایج از قبل داره`;
+  if (p.zero >= Math.max(...rankings.map(r => r.zero)) && p.zero > 3)
+    return `🤡 ${n}: ${fa(p.zero)} صفر، تا حالا درس نگرفته`;
+  if (p.gd >= Math.max(...rankings.map(r => r.gd)) && p.gd > 2)
+    return `📐 ${n} نتیجه دقیق نمی‌زنه ولی بویی از تفاضل می‌بره`;
+  if (p.winner >= Math.max(...rankings.map(r => r.winner)) && p.winner > 2)
+    return `🎰 ${n} برنده رو حدس می‌زنه ولی اعداد رو اصلاً!`;
+  if (profile && profile.avgGoals > 3.2)
+    return `💣 ${n} فکر می‌کنه هر بازی فینال لیگ قهرمانانه`;
+  if (profile && profile.avgGoals < 1.5)
+    return `🧱 ${n} فکر می‌کنه فوتبال همش ۱-۰ ئه`;
+  if (profile && profile.drawRate > 0.25)
+    return `🤝 ${n} عاشق تساوی‌ئه — حتماً دیپلماته`;
+  if (profile && profile.cleanSheets > profile.groupCount * 0.6)
+    return `🧤 ${n} دروازه‌بان بوده انگار — همش کلین‌شیت`;
+  if (i === 1) {
+    const gap = rankings[0].total - p.total;
+    return `😤 ${n} فقط ${fa(gap)} امتیاز تا صدر — نفسش به شماره افتاده`;
+  }
+  if (i === 2)
+    return `🥉 ${n} آروم داره از پشت میاد`;
+  if (profile && profile.highScores > 10)
+    return `🎲 ${n} ریسک‌پذیرترین بازیکنه`;
+  return `⚽ ${n} داره کارشو می‌کنه`;
+}
+
+function shareLeaderboardImage(btn) {
+  btn.disabled = true;
+  btn.textContent = '⏳ در حال ساخت…';
+
+  const allPlayers = Object.keys(allPredictions).filter(p => Object.keys(allPredictions[p]).length > 0);
+  const rankings = allPlayers.map(p => {
+    const pobj = PLAYERS.find(x => x.name === p);
+    return { name: p, faName: pobj ? pobj.faName : p, avatar: pobj ? pobj.avatar : '👤', ...calcPlayerTotal(p), profile: predictionProfile(p) };
+  }).sort((a, b) => b.total - a.total || b.netAcc - a.netAcc || b.exact - a.exact || b.gd - a.gd || a.faName.localeCompare(b.faName, 'fa'));
+
+  const gradedCount = MATCHES.filter(m => realScores[m.id] !== undefined).length;
+  const koGraded = KO.filter(m => koReal[m.id] !== undefined).length;
+  const totalGraded = gradedCount + koGraded;
+  const totalMatches = MATCHES.length + KO.length;
+  const medals = ['🥇', '🥈', '🥉'];
+
+  const rowH = 56, padTop = 90, padX = 24;
+  const padBottom = 30;
+  const W = 560;
+  const H = padTop + rankings.length * rowH + padBottom;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = W * 2;
+  canvas.height = H * 2;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(2, 2);
+
+  // background gradient
+  const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
+  bgGrad.addColorStop(0, '#0d1a12');
+  bgGrad.addColorStop(0.4, '#0b1117');
+  bgGrad.addColorStop(1, '#0f0d1a');
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  // decorative top accent line
+  const accentGrad = ctx.createLinearGradient(padX, 0, W - padX, 0);
+  accentGrad.addColorStop(0, 'rgba(240,165,0,0)');
+  accentGrad.addColorStop(0.3, 'rgba(240,165,0,.7)');
+  accentGrad.addColorStop(0.7, 'rgba(39,174,96,.7)');
+  accentGrad.addColorStop(1, 'rgba(39,174,96,0)');
+  ctx.fillStyle = accentGrad;
+  ctx.fillRect(padX, 0, W - 2 * padX, 3);
+
+  // header
+  ctx.direction = 'rtl';
+  ctx.fillStyle = '#f0a500';
+  ctx.font = '900 20px Vazirmatn, Tahoma, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('⚽ جدول پیش‌بینی جام جهانی ۲۰۲۶ ⚽', W / 2, 34);
+  ctx.fillStyle = '#7a9e8a';
+  ctx.font = '700 11px Vazirmatn, Tahoma, sans-serif';
+  const pct = totalGraded > 0 ? Math.round(totalGraded / totalMatches * 100) : 0;
+  ctx.fillText(`${fa(totalGraded)} بازی از ${fa(totalMatches)} · ${fa(pct)}٪ تکمیل · ${new Date().toLocaleDateString('fa-IR')}`, W / 2, 55);
+
+  // progress bar
+  const barW = 200, barH2 = 5, barX = (W - barW) / 2, barY = 62;
+  ctx.fillStyle = '#243040';
+  ctx.beginPath(); ctx.roundRect(barX, barY, barW, barH2, 3); ctx.fill();
+  const progGrad = ctx.createLinearGradient(barX, 0, barX + barW * pct / 100, 0);
+  progGrad.addColorStop(0, '#1a7a3f');
+  progGrad.addColorStop(1, '#f0a500');
+  ctx.fillStyle = progGrad;
+  ctx.beginPath(); ctx.roundRect(barX, barY, barW * pct / 100, barH2, 3); ctx.fill();
+
+  // column headers — same tags as the table
+  const y0 = padTop - 6;
+  ctx.fillStyle = '#5a7e6a';
+  ctx.font = '700 9px Vazirmatn, Tahoma, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('امتیاز', padX + 32, y0);
+  ctx.fillText('🎯 دقیق', padX + 86, y0);
+  ctx.fillText('📐 تفاضل', padX + 138, y0);
+  ctx.fillText('✅ برنده', padX + 192, y0);
+  ctx.fillText('❌ اشتباه', padX + 244, y0);
+  ctx.textAlign = 'right';
+  ctx.fillText('بازیکن', W - padX - 6, y0);
+
+  // separator line
+  ctx.strokeStyle = 'rgba(122,158,138,.25)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(padX, y0 + 6); ctx.lineTo(W - padX, y0 + 6); ctx.stroke();
+
+  rankings.forEach((p, i) => {
+    const y = padTop + i * rowH + rowH / 2;
+    const funSentence = getPlayerFunSentence(p, i, rankings);
+
+    // row background
+    if (i === 0) {
+      const glow = ctx.createLinearGradient(padX, y - rowH / 2, W - padX, y - rowH / 2);
+      glow.addColorStop(0, 'rgba(240,165,0,.12)');
+      glow.addColorStop(0.5, 'rgba(240,165,0,.06)');
+      glow.addColorStop(1, 'rgba(240,165,0,.12)');
+      ctx.fillStyle = glow;
+    } else if (i % 2 === 0) {
+      ctx.fillStyle = 'rgba(26,37,53,.4)';
+    } else {
+      ctx.fillStyle = 'rgba(20,28,36,.3)';
+    }
+    ctx.beginPath();
+    ctx.roundRect(padX - 4, y - rowH / 2 + 2, W - 2 * padX + 8, rowH - 4, 6);
+    ctx.fill();
+
+    // left border accent for top 3
+    if (i < 3) {
+      ctx.fillStyle = i === 0 ? '#f0a500' : i === 1 ? '#a0a0a0' : '#cd7f32';
+      ctx.beginPath();
+      ctx.roundRect(padX - 4, y - rowH / 2 + 2, 3, rowH - 4, [3, 0, 0, 3]);
+      ctx.fill();
+    }
+
+    // medal / position
+    ctx.textAlign = 'right';
+    ctx.font = '900 16px Vazirmatn, Tahoma, sans-serif';
+    ctx.fillStyle = i === 0 ? '#f0a500' : i === 1 ? '#c0c0c0' : i === 2 ? '#cd7f32' : '#e8f0e9';
+    ctx.fillText(i < 3 ? medals[i] : fa(i + 1), W - padX + 2, y - 4);
+
+    // name
+    ctx.textAlign = 'right';
+    ctx.font = '800 14px Vazirmatn, Tahoma, sans-serif';
+    ctx.fillStyle = '#e8f0e9';
+    ctx.fillText(p.faName, W - padX - 28, y - 4);
+
+    // fun sentence under name
+    ctx.font = '600 8px Vazirmatn, Tahoma, sans-serif';
+    ctx.fillStyle = i === 0 ? 'rgba(240,165,0,.7)' : 'rgba(122,158,138,.65)';
+    ctx.fillText(funSentence, W - padX - 28, y + 12);
+
+    // total points (big, Persian)
+    ctx.textAlign = 'center';
+    ctx.font = '900 18px Vazirmatn, Tahoma, sans-serif';
+    ctx.fillStyle = '#f0a500';
+    ctx.fillText(fa(p.total), padX + 32, y + 2);
+
+    // breakdown stats (all Persian)
+    ctx.font = '700 12px Vazirmatn, Tahoma, sans-serif';
+    ctx.fillStyle = '#e8f0e9';
+    ctx.fillText(fa(p.exact), padX + 86, y + 1);
+    ctx.fillText(fa(p.gd), padX + 138, y + 1);
+    ctx.fillText(fa(p.winner), padX + 192, y + 1);
+    ctx.fillStyle = '#e74c3c';
+    ctx.fillText(fa(p.zero), padX + 244, y + 1);
+  });
+
+  // bottom accent line
+  ctx.fillStyle = accentGrad;
+  ctx.fillRect(padX, H - 3, W - 2 * padX, 3);
+
+  // footer
+  ctx.fillStyle = '#5a7e6a';
+  ctx.font = '600 8px Vazirmatn, Tahoma, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('worldcup-2026-predictions · کی قهرمان پیش‌بینی میشه؟ 🤔', W / 2, H - 10);
+
+  canvas.toBlob(blob => {
+    btn.disabled = false;
+    btn.textContent = '📸 اشتراک تصویر جدول';
+    if (!blob) { showToast('خطا در ساخت تصویر'); return; }
+
+    const file = new File([blob], 'leaderboard.png', { type: 'image/png' });
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      navigator.share({ files: [file], title: 'جدول پیش‌بینی جام جهانی ۲۰۲۶' }).catch(() => {});
+    } else {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'leaderboard.png';
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+      showToast('تصویر دانلود شد');
+    }
+  }, 'image/png');
+}
+
+// ══════════════════════════════════════════════════════
+// ── فیچر ۶: هیستوگرام گل ──
+// ══════════════════════════════════════════════════════
+
+let histoSelectedPlayer = null;
+
+function computeGoalHistogram(playerName) {
+  const preds = allPredictions[playerName] || {};
+  const predDist = {};  // total goals in prediction → count
+  const realDist = {};  // total goals in real result → count
+
+  MATCHES.forEach(m => {
+    const pick = scoreArray(preds[m.id]);
+    const real = scoreArray(realScores[m.id]);
+    if (pick) {
+      const g = pick[0] + pick[1];
+      predDist[g] = (predDist[g] || 0) + 1;
+    }
+    if (real) {
+      const g = real[0] + real[1];
+      realDist[g] = (realDist[g] || 0) + 1;
+    }
+  });
+
+  const maxGoal = Math.max(0, ...Object.keys(predDist).map(Number), ...Object.keys(realDist).map(Number));
+  const buckets = [];
+  for (let g = 0; g <= Math.min(maxGoal, 10); g++) {
+    buckets.push({ goals: g, pred: predDist[g] || 0, real: realDist[g] || 0 });
+  }
+  return buckets;
+}
+
+function renderGoalHistogramSvg(buckets) {
+  if (!buckets.length) return '<div style="text-align:center;color:var(--dim);padding:1rem;font-size:.78rem">داده‌ای برای نمایش وجود ندارد</div>';
+
+  const W = 480, H = 200;
+  const left = 32, right = 12, top = 16, bottom = 36;
+  const plotW = W - left - right;
+  const plotH = H - top - bottom;
+  const n = buckets.length;
+  const groupW = plotW / n;
+  const barW = groupW * 0.35;
+  const gap = groupW * 0.06;
+  const maxVal = Math.max(1, ...buckets.map(b => Math.max(b.pred, b.real)));
+
+  const barH = v => (v / maxVal) * plotH;
+
+  let bars = '';
+  let labels = '';
+
+  buckets.forEach((b, i) => {
+    const cx = left + i * groupW + groupW / 2;
+
+    // predicted bar (left)
+    const px = cx - barW - gap / 2;
+    const ph = barH(b.pred);
+    const py = top + plotH - ph;
+    bars += `<rect class="histo-bar-pred" x="${px.toFixed(1)}" y="${py.toFixed(1)}" width="${barW.toFixed(1)}" height="${ph.toFixed(1)}" rx="2"></rect>`;
+    if (b.pred > 0) bars += `<text class="histo-val" fill="#f0a500" x="${(px + barW / 2).toFixed(1)}" y="${(py - 3).toFixed(1)}">${b.pred}</text>`;
+
+    // real bar (right)
+    const rx = cx + gap / 2;
+    const rh = barH(b.real);
+    const ry = top + plotH - rh;
+    bars += `<rect class="histo-bar-real" x="${rx.toFixed(1)}" y="${ry.toFixed(1)}" width="${barW.toFixed(1)}" height="${rh.toFixed(1)}" rx="2"></rect>`;
+    if (b.real > 0) bars += `<text class="histo-val" fill="#27ae60" x="${(rx + barW / 2).toFixed(1)}" y="${(ry - 3).toFixed(1)}">${b.real}</text>`;
+
+    // x label
+    labels += `<text class="histo-label" x="${cx.toFixed(1)}" y="${(H - bottom + 16).toFixed(1)}" text-anchor="middle">${b.goals}${b.goals >= 10 ? '+' : ''}</text>`;
+  });
+
+  // y axis ticks
+  let yTicks = '';
+  const step = maxVal <= 5 ? 1 : maxVal <= 15 ? 5 : 10;
+  for (let v = 0; v <= maxVal; v += step) {
+    const yy = top + plotH - barH(v);
+    yTicks += `<line x1="${left}" y1="${yy.toFixed(1)}" x2="${W - right}" y2="${yy.toFixed(1)}" stroke="rgba(122,158,138,.16)" stroke-width="1"></line>`;
+    yTicks += `<text class="histo-label" x="${left - 6}" y="${(yy + 4).toFixed(1)}" text-anchor="end">${v}</text>`;
+  }
+
+  // x axis label
+  labels += `<text class="histo-label" x="${(left + plotW / 2).toFixed(1)}" y="${(H - 4).toFixed(1)}" text-anchor="middle">مجموع گل بازی</text>`;
+
+  return `<svg class="histo-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="هیستوگرام گل">
+    ${yTicks}
+    <line stroke="rgba(122,158,138,.55)" stroke-width="1" x1="${left}" y1="${top}" x2="${left}" y2="${top + plotH}"></line>
+    <line stroke="rgba(122,158,138,.55)" stroke-width="1" x1="${left}" y1="${top + plotH}" x2="${W - right}" y2="${top + plotH}"></line>
+    ${bars}
+    ${labels}
+  </svg>`;
+}
+
+function buildGoalHistogramCard(rankings) {
+  const card = document.createElement('div');
+  card.className = 'histo-card';
+
+  if (!rankings.length) {
+    card.innerHTML = '<div class="histo-title">📊 هیستوگرام گل</div><div style="text-align:center;color:var(--dim);padding:1rem;font-size:.78rem">داده‌ای برای نمایش وجود ندارد</div>';
+    return card;
+  }
+
+  if (!histoSelectedPlayer || !rankings.find(r => r.name === histoSelectedPlayer)) {
+    histoSelectedPlayer = rankings[0].name;
+  }
+
+  const tabs = rankings.map(p => {
+    const active = p.name === histoSelectedPlayer ? ' active' : '';
+    return `<button class="histo-ptab${active}" onclick="switchHistoPlayer('${escapeHtml(p.name.replace(/'/g, "\\'"))}')">${escapeHtml(p.faName)}</button>`;
+  }).join('');
+
+  const buckets = computeGoalHistogram(histoSelectedPlayer);
+  const svg = renderGoalHistogramSvg(buckets);
+
+  // compute summary stats
+  const preds = allPredictions[histoSelectedPlayer] || {};
+  let predTotal = 0, predCount = 0, realTotal = 0, realCount = 0;
+  MATCHES.forEach(m => {
+    const pick = scoreArray(preds[m.id]);
+    const real = scoreArray(realScores[m.id]);
+    if (pick) { predTotal += pick[0] + pick[1]; predCount++; }
+    if (real) { realTotal += real[0] + real[1]; realCount++; }
+  });
+  const avgPred = predCount ? (predTotal / predCount).toFixed(1) : '-';
+  const avgReal = realCount ? (realTotal / realCount).toFixed(1) : '-';
+  const diff = predCount && realCount ? ((predTotal / predCount) - (realTotal / realCount)).toFixed(1) : '-';
+  const diffLabel = diff > 0 ? `+${diff} خوش‌بین` : diff < 0 ? `${diff} بدبین` : 'دقیق';
+
+  card.innerHTML = `
+    <div class="histo-title">📊 توزیع گل: پیش‌بینی در برابر واقعیت</div>
+    <div class="histo-sub">آیا بازیکن خوش‌بین است یا بدبین؟ میانگین گل پیش‌بینی‌شده: <b style="color:var(--gold)">${avgPred}</b> · واقعی: <b style="color:var(--green-light)">${avgReal}</b> · اختلاف: <b>${escapeHtml(diffLabel)}</b></div>
+    <div class="histo-player-tabs">${tabs}</div>
+    <div id="histo-chart-wrap">${svg}</div>
+    <div class="histo-legend">
+      <div class="histo-legend-item"><div class="histo-legend-dot" style="background:var(--gold)"></div> پیش‌بینی</div>
+      <div class="histo-legend-item"><div class="histo-legend-dot" style="background:var(--green-light)"></div> واقعی</div>
+    </div>`;
+  return card;
+}
+
+function switchHistoPlayer(name) {
+  histoSelectedPlayer = name;
+  buildRankView();
+  // scroll to histogram
+  const el = document.querySelector('.histo-card');
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ══════════════════════════════════════════════════════
+// ── فیچر ۱: دوقلوها / Twin Detector ──
+// ══════════════════════════════════════════════════════
+
+function computeTwinPairs() {
+  const players = playersWithPredictionData();
+  const scored = scoredMatchItems();
+  const pairs = [];
+  for (let a = 0; a < players.length; a++) {
+    for (let b = a + 1; b < players.length; b++) {
+      let same = 0, sameWinner = 0, total = 0, totalError = 0;
+      scored.forEach(m => {
+        const pa = predictionForMatchItem(players[a], m);
+        const pb = predictionForMatchItem(players[b], m);
+        const sa = scoreArray(pa), sb = scoreArray(pb);
+        if (!sa || !sb) return;
+        total++;
+        if (sa[0] === sb[0] && sa[1] === sb[1]) same++;
+        if (Math.sign(sa[0] - sa[1]) === Math.sign(sb[0] - sb[1])) sameWinner++;
+        totalError += Math.abs(sa[0] - sb[0]) + Math.abs(sa[1] - sb[1]);
+      });
+      if (total > 0) {
+        pairs.push({
+          a: players[a], b: players[b],
+          same, sameWinner, total,
+          sameRate: same / total,
+          winnerRate: sameWinner / total,
+          avgDiff: totalError / total
+        });
+      }
+    }
+  }
+  return pairs;
+}
+
+function buildTwinCard(container) {
+  const pairs = computeTwinPairs();
+  if (!pairs.length) return;
+
+  const byExact = [...pairs].sort((a, b) => b.sameRate - a.sameRate);
+  const mostTwin = byExact[0];
+  const mostOpposite = byExact[byExact.length - 1];
+  const pdn = n => playerDisplayName(n);
+
+  const card = document.createElement('div');
+  card.className = 'cmp-card';
+
+  let html = `<div class="cmp-title">🧠 تشخیص دوقلوها</div>
+    <div class="cmp-sub">کدوم دو نفر یک مغز دارن؟ و کدوم دو نفر از دو سیاره مختلف اومدن؟</div>`;
+
+  // most similar
+  html += `<div class="cmp-section-title">👯 شبیه‌ترین ذهن‌ها</div>`;
+  byExact.slice(0, 3).forEach((p, i) => {
+    const pct = Math.round(p.sameRate * 100);
+    const wpct = Math.round(p.winnerRate * 100);
+    html += `<div class="cmp-pair ${i === 0 ? 'highlight' : ''}">
+      <div class="cmp-pair-names">${escapeHtml(pdn(p.a))} و ${escapeHtml(pdn(p.b))}
+        <div class="cmp-pair-desc">${fa(p.same)} نتیجه یکسان از ${fa(p.total)} بازی · ${fa(wpct)}٪ برنده یکسان</div>
+      </div>
+      <div class="cmp-pair-stat">${fa(pct)}٪</div>
+    </div>`;
+  });
+
+  // most different
+  html += `<div class="cmp-section"><div class="cmp-section-title">🪐 از دو سیاره مختلف</div>`;
+  byExact.slice(-3).reverse().forEach((p, i) => {
+    const pct = Math.round(p.sameRate * 100);
+    html += `<div class="cmp-pair ${i === 0 ? 'anti' : ''}">
+      <div class="cmp-pair-names">${escapeHtml(pdn(p.a))} و ${escapeHtml(pdn(p.b))}
+        <div class="cmp-pair-desc">فقط ${fa(p.same)} نتیجه مشترک از ${fa(p.total)} · میانگین اختلاف: ${fa(p.avgDiff.toFixed(1))} گل</div>
+      </div>
+      <div class="cmp-pair-stat">${fa(pct)}٪</div>
+    </div>`;
+  });
+  html += `</div>`;
+
+  // fun fact
+  if (mostTwin.sameRate > 0.3)
+    html += `<div style="text-align:center;margin-top:.7rem;font-size:.72rem;color:var(--gold);font-weight:700">💡 ${escapeHtml(pdn(mostTwin.a))} و ${escapeHtml(pdn(mostTwin.b))} حتماً شب‌ها با هم مشورت می‌کنن!</div>`;
+
+  card.innerHTML = html;
+  container.appendChild(card);
+}
+
+// ══════════════════════════════════════════════════════
+// ── فیچر ۳: شکستن اجماع / Consensus Breaker ──
+// ══════════════════════════════════════════════════════
+
+function computeConsensusBreakers() {
+  const players = playersWithPredictionData();
+  const scored = scoredMatchItems();
+  const results = [];
+
+  scored.forEach(m => {
+    // for each match, see which direction each player predicted
+    const predictions = {};
+    players.forEach(p => {
+      const pred = predictionForMatchItem(p, m);
+      const sc = scoreArray(pred);
+      if (!sc) return;
+      predictions[p] = { sc, sign: Math.sign(sc[0] - sc[1]) };
+    });
+
+    const entries = Object.entries(predictions);
+    if (entries.length < 3) return;
+
+    // find the majority winner direction
+    const signs = entries.map(([_, v]) => v.sign);
+    const counts = { '-1': 0, '0': 0, '1': 0 };
+    signs.forEach(s => counts[String(s)]++);
+    const majoritySign = Number(Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0]);
+    const majorityCount = counts[String(majoritySign)];
+
+    // find rebels (predicted opposite of majority)
+    entries.forEach(([name, v]) => {
+      if (v.sign === majoritySign) return;
+      // only interesting if they were truly alone or nearly alone
+      const rebellCount = entries.filter(([_, x]) => x.sign === v.sign).length;
+      if (rebellCount > entries.length / 3) return; // not a rebel if many agreed
+
+      // check if rebel was right
+      const [rs1, rs2] = m.sc;
+      const realSign = Math.sign(rs1 - rs2);
+      const wasRight = v.sign === realSign;
+      const pts = calcScore([v.sc[0], v.sc[1]], m.real, m.kind === 'ko');
+
+      const t1Name = m.t1 ? teamFa(m.t1) : (m.s1 || '?');
+      const t2Name = m.t2 ? teamFa(m.t2) : (m.s2 || '?');
+      const f1 = FLAGS[m.t1] || '';
+      const f2 = FLAGS[m.t2] || '';
+
+      results.push({
+        player: name, match: m, wasRight, pts,
+        t1Name, t2Name, f1, f2,
+        rebellCount, majorityCount, totalPlayers: entries.length,
+        predScore: v.sc, realScore: m.sc
+      });
+    });
+  });
+
+  return results;
+}
+
+function buildConsensusCard(container) {
+  const breakers = computeConsensusBreakers();
+  if (!breakers.length) return;
+
+  const geniuses = breakers.filter(b => b.wasRight).sort((a, b) => (b.pts || 0) - (a.pts || 0));
+  const stubborns = breakers.filter(b => !b.wasRight);
+  const pdn = n => playerDisplayName(n);
+
+  // count per player
+  const geniusCount = {}, stubbornCount = {};
+  geniuses.forEach(g => { geniusCount[g.player] = (geniusCount[g.player] || 0) + 1; });
+  stubborns.forEach(s => { stubbornCount[s.player] = (stubbornCount[s.player] || 0) + 1; });
+
+  const card = document.createElement('div');
+  card.className = 'cmp-card';
+
+  let html = `<div class="cmp-title">🤫 شکستن اجماع</div>
+    <div class="cmp-sub">وقتی همه یک چیز می‌گن ولی یکی مخالفه — گاهی نابغه‌ست، گاهی لجبازه!</div>`;
+
+  // genius section
+  html += `<div class="cmp-section-title">🧠 نابغه تنها — تنها مخالف بود و درست در اومد</div>`;
+  if (geniuses.length === 0) {
+    html += '<div style="color:var(--dim);font-size:.75rem;padding:.4rem 0">هنوز کسی اجماع رو با موفقیت نشکسته!</div>';
+  } else {
+    geniuses.slice(0, 8).forEach(g => {
+      html += `<div class="cmp-match-row genius">
+        <div class="cmp-match-info">${escapeHtml(g.f1)} ${escapeHtml(g.t1Name)} ${fa(g.realScore[0])}-${fa(g.realScore[1])} ${escapeHtml(g.t2Name)} ${escapeHtml(g.f2)}
+          <div class="cmp-match-detail">پیش‌بینی ${escapeHtml(pdn(g.player))}: ${fa(g.predScore[0])}-${fa(g.predScore[1])} · ${fa(g.majorityCount)} نفر مخالف بودن</div>
+        </div>
+        <span class="cmp-player-tag genius">🧠 نابغه</span>
+      </div>`;
+    });
+  }
+
+  // stubborn section
+  html += `<div class="cmp-section"><div class="cmp-section-title">😤 لجباز بی‌دلیل — تنها مخالف بود و اشتباه کرد</div>`;
+  if (stubborns.length === 0) {
+    html += '<div style="color:var(--dim);font-size:.75rem;padding:.4rem 0">فعلاً لجبازی ثبت نشده!</div>';
+  } else {
+    stubborns.slice(0, 8).forEach(s => {
+      html += `<div class="cmp-match-row stubborn">
+        <div class="cmp-match-info">${escapeHtml(s.f1)} ${escapeHtml(s.t1Name)} ${fa(s.realScore[0])}-${fa(s.realScore[1])} ${escapeHtml(s.t2Name)} ${escapeHtml(s.f2)}
+          <div class="cmp-match-detail">پیش‌بینی ${escapeHtml(pdn(s.player))}: ${fa(s.predScore[0])}-${fa(s.predScore[1])} · ${fa(s.majorityCount)} نفر درست گفتن</div>
+        </div>
+        <span class="cmp-player-tag stubborn">😤 لجباز</span>
+      </div>`;
+    });
+  }
+  html += '</div>';
+
+  // scoreboard
+  const allNames = new Set([...Object.keys(geniusCount), ...Object.keys(stubbornCount)]);
+  if (allNames.size > 0) {
+    html += `<div class="cmp-section"><div class="cmp-section-title">📊 خلاصه: چند بار نابغه، چند بار لجباز؟</div>`;
+    [...allNames].forEach(name => {
+      const gc = geniusCount[name] || 0;
+      const sc = stubbornCount[name] || 0;
+      const label = gc > sc ? '🧠' : sc > gc ? '😤' : '⚖️';
+      html += `<div class="cmp-pair">
+        <div class="cmp-pair-names">${label} ${escapeHtml(pdn(name))}
+          <div class="cmp-pair-desc">🧠 نابغه: ${fa(gc)} بار · 😤 لجباز: ${fa(sc)} بار</div>
+        </div>
+        <div class="cmp-pair-stat">${fa(gc)}/${fa(gc + sc)}</div>
+      </div>`;
+    });
+    html += '</div>';
+  }
+
+  card.innerHTML = html;
+  container.appendChild(card);
+}
+
+// ══════════════════════════════════════════════════════
+// ── فیچر ۶: نفرین تیمی / Curse Tracker ──
+// ══════════════════════════════════════════════════════
+
+function computePlayerCurses(playerName) {
+  const preds = allPredictions[playerName] || {};
+  const teamData = {};
+
+  MATCHES.forEach(m => {
+    const pick = scoreArray(preds[m.id]);
+    const real = scoreArray(realScores[m.id]);
+    if (!pick || !real) return;
+    const [ps1, ps2] = pick;
+    const [rs1, rs2] = real;
+
+    [m.t1, m.t2].forEach((team, ti) => {
+      if (!teamData[team]) teamData[team] = { predWins: 0, realWins: 0, predLoss: 0, realLoss: 0, matches: 0, wrongWins: 0, wrongLoss: 0 };
+      teamData[team].matches++;
+      const predW = ti === 0 ? ps1 > ps2 : ps2 > ps1;
+      const realW = ti === 0 ? rs1 > rs2 : rs2 > rs1;
+      const predL = ti === 0 ? ps1 < ps2 : ps2 < ps1;
+      const realL = ti === 0 ? rs1 < rs2 : rs2 < rs1;
+      if (predW) teamData[team].predWins++;
+      if (realW) teamData[team].realWins++;
+      if (predL) teamData[team].predLoss++;
+      if (realL) teamData[team].realLoss++;
+      if (predW && !realW) teamData[team].wrongWins++;
+      if (predL && !realL) teamData[team].wrongLoss++;
+    });
+  });
+
+  const entries = Object.entries(teamData).filter(([_, d]) => d.matches >= 2);
+
+  // cursed: predicted to win a lot but they kept losing
+  const cursed = entries
+    .filter(([_, d]) => d.predWins >= 2 && d.wrongWins >= 2)
+    .map(([team, d]) => ({ team, ...d, curseRate: d.wrongWins / d.predWins }))
+    .sort((a, b) => b.wrongWins - a.wrongWins || b.curseRate - a.curseRate);
+
+  // blessed: predicted to lose but they didn't — reverse curse
+  const blessed = entries
+    .filter(([_, d]) => d.predLoss >= 2 && d.wrongLoss >= 2)
+    .map(([team, d]) => ({ team, ...d, blessRate: d.wrongLoss / d.predLoss }))
+    .sort((a, b) => b.wrongLoss - a.wrongLoss || b.blessRate - a.blessRate);
+
+  return { cursed: cursed.slice(0, 3), blessed: blessed.slice(0, 3) };
+}
+
+function buildCurseCard(container) {
+  const players = playersWithPredictionData();
+  if (!players.length) return;
+
+  const intro = document.createElement('div');
+  intro.className = 'cmp-card';
+  intro.innerHTML = `<div class="cmp-title">🔮 نفرین‌شده‌ها</div>
+    <div class="cmp-sub">هر وقت فلانی یه تیم رو برنده می‌ذاره، اون تیم نمی‌بره! و بالعکس — بعضی تیم‌ها وقتی باختشون رو پیش‌بینی می‌کنن، نمی‌بازن! 😈</div>`;
+  container.appendChild(intro);
+
+  const pdn = n => playerDisplayName(n);
+
+  players.forEach(playerName => {
+    const curses = computePlayerCurses(playerName);
+    if (!curses.cursed.length && !curses.blessed.length) return;
+
+    const card = document.createElement('div');
+    card.className = 'cmp-card';
+    let html = `<div style="font-size:.85rem;font-weight:900;color:var(--text);margin-bottom:.55rem">${escapeHtml(pdn(playerName))}</div>`;
+
+    if (curses.cursed.length) {
+      html += '<div class="cmp-section-title">☠️ نفرین — برنده‌شون می‌ذاره ولی نمی‌برن</div>';
+      curses.cursed.forEach(c => {
+        html += `<div class="curse-team cursed">
+          <span class="curse-flag">${FLAGS[c.team] || '🏳'}</span>
+          <div class="curse-info">
+            <div class="curse-team-name">${teamFa(c.team)}</div>
+            <div class="curse-stat">${fa(c.wrongWins)} بار برنده‌شون گذاشت ولی نبردن (از ${fa(c.predWins)} پیش‌بینی برد)</div>
+          </div>
+          <span class="curse-rate" style="color:var(--red)">${fa(c.wrongWins)} ☠️</span>
+        </div>`;
+      });
+    }
+
+    if (curses.blessed.length) {
+      html += `<div class="${curses.cursed.length ? 'cmp-section' : ''}"><div class="cmp-section-title">🍀 برعکس — بازنده‌شون می‌ذاره ولی نمی‌بازن</div>`;
+      curses.blessed.forEach(c => {
+        html += `<div class="curse-team blessed">
+          <span class="curse-flag">${FLAGS[c.team] || '🏳'}</span>
+          <div class="curse-info">
+            <div class="curse-team-name">${teamFa(c.team)}</div>
+            <div class="curse-stat">${fa(c.wrongLoss)} بار بازنده‌شون گذاشت ولی نباختن (از ${fa(c.predLoss)} پیش‌بینی باخت)</div>
+          </div>
+          <span class="curse-rate" style="color:var(--green-light)">${fa(c.wrongLoss)} 🍀</span>
+        </div>`;
+      });
+      html += '</div>';
+    }
+
+    card.innerHTML = html;
+    container.appendChild(card);
+  });
 }
 
 function showToast(msg) {

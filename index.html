@@ -4086,11 +4086,13 @@ const FA_DAYS = {
   "Thu":"پنج‌شنبه","Fri":"جمعه","Sat":"شنبه","Sun":"یکشنبه"
 };
 const FA_MONTHS = {"Jun":"ژوئن","Jul":"ژوئیه"};
-const FA_ROUNDS = {R32:'یک‌سی‌ودوم',R16:'یک‌شانزدهم',QF:'ربع‌نهایی',SF:'نیمه‌نهایی','3rd':'مقام سوم',Final:'فینال'};
-// ترتیبِ مراحلِ حذفی و «مرحله‌ی بازِ فعلی» برای ویرایشِ پیش‌بینی.
-// مراحلِ قبل از KO_OPEN_ROUND فقط‌خواندنی (قفل) و مراحلِ بعد هنوز نمایش داده نمی‌شوند.
+const FA_ROUNDS = {R32:'یک‌شانزدهم نهایی',R16:'یک‌هشتم نهایی',QF:'یک‌چهارم نهایی',SF:'نیمه‌نهایی','3rd':'رده‌بندی',Final:'فینال'};
+// ترتیبِ مراحلِ حذفی و مرحله‌ی پیش‌فرضِ باز برای ویرایشِ پیش‌بینی.
+// از یک‌چهارم به بعد، با شروع هر مرحله، همان مرحله قفل می‌شود و مرحله‌ی بعدی خودکار باز می‌شود.
 const KO_ROUND_ORDER = ['R32','R16','QF','SF','3rd','Final'];
-const KO_OPEN_ROUND = 'R16';
+const KO_OPEN_ROUND = 'QF';
+const KO_YEAR = 2026;
+const KO_MONTH_INDEX = {Jun:5, Jul:6};
 
 const KO = [
   // Round of 32
@@ -4353,7 +4355,7 @@ function calcPlayerTotal(playerName) {
     total += pts;
     if (pts === 8) exact++; else if (pts === 4) gdPts++; else if (pts === 2) winnerPts++; else zeroPts++;
   });
-  // امتیاز صعود به یک‌سی‌ودوم: ۲ امتیاز برای هر تیمِ درست
+  // امتیاز صعود به یک‌شانزدهم نهایی: ۲ امتیاز برای هر تیمِ درست
   const q = calcQualifierPoints(playerName);
   total += q.pts;
   return { total, exact, gd: gdPts, winner: winnerPts, zero: zeroPts, netAcc: exact - zeroPts, qual: q.correct, qualPts: q.pts };
@@ -5429,17 +5431,57 @@ function getUnlockedRounds() {
   return rounds;
 }
 
-// مراحلی که در «تبِ پیش‌بینیِ حذفی» نمایش داده می‌شوند: از R32 تا مرحله‌ی بازِ فعلی.
-// مستقل از ثبتِ نتایج است تا بتوان مرحله‌ی بعد را زودتر برای پیش‌بینی باز کرد.
-function getPredictionRounds() {
-  if (!realTableCompleteForKnockout()) return [];
-  const openIdx = KO_ROUND_ORDER.indexOf(KO_OPEN_ROUND);
-  return KO_ROUND_ORDER.slice(0, openIdx + 1);
+function koRoundStart(round) {
+  const dates = KO.filter(m => m.round === round).map(m => {
+    const p = String(m.date || '').split(/\s+/);
+    const mon = KO_MONTH_INDEX[p[1]];
+    const day = Number(p[2]);
+    const [hh, mm] = String(m.time || '00:00').split(':').map(Number);
+    if (mon === undefined || !Number.isFinite(day) || !Number.isFinite(hh)) return null;
+    return new Date(KO_YEAR, mon, day, hh, Number.isFinite(mm) ? mm : 0, 0, 0);
+  }).filter(Boolean);
+  if (!dates.length) return null;
+  return new Date(Math.min(...dates.map(d => d.getTime())));
 }
 
-// فقط «مرحله‌ی بازِ فعلی» قابلِ ویرایش است؛ مراحلِ قبل قفل (فقط‌خواندنی)‌اند.
+function hasKoRoundStarted(round, now = new Date()) {
+  const start = koRoundStart(round);
+  return !!start && now.getTime() >= start.getTime();
+}
+
+// دورهای قابل ویرایش در هر زمان:
+// قبل از شروع یک‌چهارم: فقط QF باز است.
+// با شروع QF: QF قفل و SF باز می‌شود.
+// با شروع SF: SF قفل و رده‌بندی + فینال باز می‌شوند.
+// با شروع رده‌بندی: فقط فینال باز می‌ماند. با شروع فینال همه چیز قفل است.
+function getKoEditableRounds(now = new Date()) {
+  if (!realTableCompleteForKnockout()) return [];
+  if (hasKoRoundStarted('Final', now)) return [];
+  if (hasKoRoundStarted('3rd', now)) return ['Final'];
+  if (hasKoRoundStarted('SF', now)) return ['3rd', 'Final'];
+  if (hasKoRoundStarted('QF', now)) return ['SF'];
+  return ['QF'];
+}
+
+function getDefaultKoRound() {
+  const editable = getKoEditableRounds();
+  if (editable.length) return editable[0];
+  const shown = getPredictionRounds();
+  return shown.length ? shown[shown.length - 1] : KO_OPEN_ROUND;
+}
+
+// مراحلی که در «تبِ پیش‌بینیِ حذفی» نمایش داده می‌شوند: تا آخرین مرحله‌ی باز/فعال.
+function getPredictionRounds() {
+  if (!realTableCompleteForKnockout()) return [];
+  const editable = getKoEditableRounds();
+  const lastRound = editable.length ? editable[editable.length - 1] : 'Final';
+  const lastIdx = KO_ROUND_ORDER.indexOf(lastRound);
+  return KO_ROUND_ORDER.slice(0, lastIdx + 1);
+}
+
+// فقط مرحله/مرحله‌های فعلی قابل ویرایش‌اند؛ مراحل قبل قفل (فقط‌خواندنی) هستند.
 function isKoRoundEditable(round) {
-  return round === KO_OPEN_ROUND;
+  return getKoEditableRounds().includes(round);
 }
 
 function getPredictions(player) {
@@ -5448,7 +5490,7 @@ function getPredictions(player) {
   return allPredictions[player];
 }
 
-// ── امتیاز صعود به یک‌سی‌ودوم (۲ امتیاز برای هر تیم درست، فارغ از رتبه) ──
+// ── امتیاز صعود به یک‌شانزدهم نهایی (۲ امتیاز برای هر تیم درست، فارغ از رتبه) ──
 function predictedQualifierBreakdown(playerName) {
   const groups = {};
   const thirds = [];
@@ -5576,7 +5618,7 @@ function showPredictSection() {
   document.getElementById('predict-section').style.display = 'flex';
   document.getElementById('wbtn-predict').classList.add('active');
   document.getElementById('wbtn-view').classList.remove('active');
-  maybeAutoUpdateRealScoresOnline(true);
+  ensureRealScoresForPrediction();
   ensureRealTableForPrediction();
 }
 
@@ -5683,6 +5725,7 @@ function selectPlayer(name) {
   document.getElementById('main').style.display = 'block';
   showPredictTabs();
   showKnockoutTab();
+  ensureRealScoresForPrediction();
   ensureRealTableForPrediction();
   updateProgress();
 }
@@ -5928,12 +5971,19 @@ function buildKnockoutView(roundOverride) {
     container.innerHTML = `<div class="ko-locked">
       <div class="ko-lock-icon">🔒</div>
       <strong>مرحله حذفی قفل است</strong><br>
-      پس از تکمیل جدول واقعی گروه‌ها در table.json،<br>مرحله یک‌سی‌ودوم فعال می‌شود.
+      پس از تکمیل جدول واقعی گروه‌ها در table.json،<br>مرحله یک‌شانزدهم نهایی فعال می‌شود.
     </div>`;
     return;
   }
 
-  const activeRound = roundOverride || currentKoRound || unlocked[unlocked.length-1];
+  let activeRound;
+  if (roundOverride && unlocked.includes(roundOverride)) {
+    activeRound = roundOverride;
+  } else if (currentKoRound && unlocked.includes(currentKoRound) && isKoRoundEditable(currentKoRound)) {
+    activeRound = currentKoRound;
+  } else {
+    activeRound = getDefaultKoRound();
+  }
   currentKoRound = activeRound;
   const editable = isKoRoundEditable(activeRound);
 
@@ -6195,6 +6245,19 @@ function maybeAutoUpdateRealTableOnline(force = false) {
   const due = force || !lastMs || (Date.now() - lastMs > AUTO_SCORE_CHECK_INTERVAL_MS);
   if (!due) return;
   updateRealTableOnline();
+}
+
+let _realScoresFetchInFlight = null;
+function ensureRealScoresOnline() {
+  // Force-load results.json and share the same in-flight request between tabs.
+  if (_realScoresFetchInFlight) return _realScoresFetchInFlight;
+  _realScoresFetchInFlight = updateRealScoresOnline()
+    .finally(() => { _realScoresFetchInFlight = null; });
+  return _realScoresFetchInFlight;
+}
+
+function ensureRealScoresForPrediction() {
+  return ensureRealScoresOnline();
 }
 
 let _realTableFetchInFlight = null;
@@ -7582,7 +7645,7 @@ function showMain() {
     showRankTab();
   } else {
     showPredictTabs();
-    showKnockoutTab(currentKoRound);
+    showKnockoutTab();
   }
 }
 
